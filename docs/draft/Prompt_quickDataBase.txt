@@ -1,0 +1,37 @@
+Link:
+https://app.quickdatabasediagrams.com/#/
+
+
+Technician_TB
+--
+id PK String
+username String UNIQUE
+email String UNIQUE
+password String
+CreatedAt datetime
+UpdatedAt datetime
+
+User_TB
+--
+id PK int
+name String
+email String UNIQUE
+
+Equipment_Management_TB
+--
+id PK String
+broughtBy_user_FK Int FK >- User_TB.id
+handedoverDate datetime
+recivedBy_tech_FK String FK >- Technician_TB.id
+givenbackDate datetime
+ticketNumber Int
+hostname String UNIQUE
+patrimonyID int UNIQUE
+computerType enum('ntb','dsk','wks')
+serviceTag String UNIQUE
+location String
+computerStatus String
+othersEquipment Sring
+remarks String
+CreatedAt datetime
+UpdatedAt datetime

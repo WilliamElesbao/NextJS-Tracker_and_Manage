@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Technician_TB {
+  id                     String                   @id @default(uuid())
+  username               String                   @unique
+  email                  String                   @unique
+  password               String
+  CreatedAt              DateTime                 @default(now())
+  UpdatedAt              DateTime                 @updatedAt
+  EquipmentManagement_TB EquipmentManagement_TB[]
+}
+
+model User_TB {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  email                  String                   @unique
+  EquipmentManagement_TB EquipmentManagement_TB[]
+}
+
+model EquipmentManagement_TB {
+  id                String        @id @default(uuid())
+  broughtBy_user_FK Int
+  handedoverDate    DateTime?
+  recivedBy_tech_FK String
+  givenbackDate     DateTime?
+  ticketNumber      Int
+  hostname          String        @unique
+  patrimonyID       Int           @unique
+  computerType      String // Enum: 'ntb', 'dsk', 'wks'
+  serviceTag        String        @unique
+  location          String
+  computerStatus    String
+  othersEquipment   String
+  remarks           String
+  CreatedAt         DateTime      @default(now())
+  UpdatedAt         DateTime      @updatedAt
+  user              User_TB       @relation(fields: [broughtBy_user_FK], references: [id])
+  technician        Technician_TB @relation(fields: [recivedBy_tech_FK], references: [id])
+}
