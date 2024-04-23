@@ -1,0 +1,13 @@
+adicioanar um campo "serial number" - OK
+
+  onde eu devo ir para adicionar um novo campo
+    no schema (prisma) crie a nova coluna e faça a migracao,
+    se a tabela voltar com os campos zerado, para inserir um novo registro,
+    é necessário criar um tecnico e um usuário para que seja possivel usar o ID deles pra criar o registro na tabela de controle de maquinas
+
+  quais arquivos e funcoes preciso ajustar para que esse novo campo seja "enxergado" ?
+    ao enviar no body da req o arquivo json com os campos e dados é necessário incluir o novo campo
+
+bkend  - optional fields Service Tag e Serial Number but on frontend is required - OK
+
+front - required (Service Tag ou Serial Number)

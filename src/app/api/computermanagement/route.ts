@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         return Response.json(
           {
             message:
-              "There is a record with that hostname, patrimonyID or serviceTag",
+              "There is a record with that hostname, patrimonyID, serviceTag or serialNumber",
           },
           { status: 409 },
         );

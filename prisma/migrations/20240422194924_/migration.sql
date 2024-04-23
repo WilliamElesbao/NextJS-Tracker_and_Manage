@@ -33,7 +33,8 @@ CREATE TABLE `EquipmentManagement_TB` (
     `hostname` VARCHAR(191) NOT NULL,
     `patrimonyID` INTEGER NOT NULL,
     `computerType` VARCHAR(191) NOT NULL,
-    `serviceTag` VARCHAR(191) NOT NULL,
+    `serviceTag` VARCHAR(191) NULL,
+    `serialNumber` VARCHAR(191) NULL,
     `location` VARCHAR(191) NOT NULL,
     `computerStatus` VARCHAR(191) NOT NULL,
     `othersEquipment` VARCHAR(191) NOT NULL,
@@ -44,6 +45,7 @@ CREATE TABLE `EquipmentManagement_TB` (
     UNIQUE INDEX `EquipmentManagement_TB_hostname_key`(`hostname`),
     UNIQUE INDEX `EquipmentManagement_TB_patrimonyID_key`(`patrimonyID`),
     UNIQUE INDEX `EquipmentManagement_TB_serviceTag_key`(`serviceTag`),
+    UNIQUE INDEX `EquipmentManagement_TB_serialNumber_key`(`serialNumber`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
