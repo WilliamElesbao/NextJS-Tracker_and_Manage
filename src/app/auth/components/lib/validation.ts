@@ -1,6 +1,6 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  username: z.string().nonempty({ message: "Username is required!" }),
-  password: z.string().nonempty({ message: "Password is required!" }),
+  username: z.string().min(1, { message: "Username is required!" }),
+  password: z.string().min(1, { message: "Password is required!" }),
 });
