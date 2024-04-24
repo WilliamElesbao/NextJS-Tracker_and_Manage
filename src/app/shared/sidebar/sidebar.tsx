@@ -1,9 +1,5 @@
 "use client";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DividerHorizontalIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
+
 import {
   Sheet,
   SheetContent,
@@ -11,6 +7,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/app/components/ui/sheet";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DividerHorizontalIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 export function Sidebar() {
   return (

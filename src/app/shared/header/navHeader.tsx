@@ -10,11 +10,11 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { destroyCookie } from "nookies";
 import { useContext } from "react";
-import { AuthContext } from "../test/authDataProvider";
-import { useRouter } from "next/navigation";
 import { Sidebar } from "../sidebar/sidebar";
+import { AuthContext } from "../test/authDataProvider";
 
 export function NavHeader() {
   const { user } = useContext(AuthContext);

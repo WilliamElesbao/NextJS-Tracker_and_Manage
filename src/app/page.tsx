@@ -1,5 +1,5 @@
-import { NavHeader } from "@/shared/header/navHeader";
-import { AuthProvider } from "@/shared/test/authDataProvider";
+import { NavHeader } from "@/app/shared/header/navHeader";
+import { AuthProvider } from "@/app/shared/test/authDataProvider";
 
 export default function Home() {
   return (
