@@ -1,5 +1,8 @@
+"use server";
+
 import { prisma } from "@/app/api/db";
 import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 export async function POST(req: Request) {
   const { data } = await req.json();
@@ -39,7 +42,18 @@ export async function GET() {
         user: true,
       },
     });
-    return Response.json(allRecords, { status: 200 });
+    const responseData = allRecords.map((record) => ({
+      ...record,
+      handedoverDate: record.handedoverDate
+        ? format(new Date(record.handedoverDate), "dd/MM/yyyy HH:mm:ss")
+        : null,
+      givenbackDate: record.givenbackDate
+        ? format(new Date(record.givenbackDate), "dd/MM/yyyy HH:mm:ss")
+        : null,
+      CreatedAt: format(new Date(record.CreatedAt), "dd/MM/yyyy HH:mm:ss"),
+      UpdatedAt: format(new Date(record.UpdatedAt), "dd/MM/yyyy HH:mm:ss"),
+    }));
+    return Response.json(responseData, { status: 200 });
   } catch (error) {
     return Response.json(
       {
