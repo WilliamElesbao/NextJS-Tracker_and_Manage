@@ -1,20 +1,29 @@
 "use server";
 
+import { UserInfo } from "@/app/components/interface/UserInfo";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { UserInfo } from "./authDataProvider";
 
-export async function decodeToken() {
-  const token: any = cookies().get("tracker_and_manage")?.value;
+export async function decodeToken(): Promise<UserInfo | null> {
+  const token: string | undefined = cookies().get("tracker_and_manage")?.value;
 
-  const decodedToken = jwt.decode(token, { complete: true }) as {
-    payload: JwtPayload;
-  } | null;
+  let decodedToken: { payload: JwtPayload } | null = null;
 
-  const userFromCookie: UserInfo = {
-    username: decodedToken?.payload?.username,
-    email: decodedToken?.payload?.email,
-  };
+  if (token) {
+    decodedToken = jwt.decode(token, { complete: true }) as {
+      payload: JwtPayload;
+    } | null;
+  }
 
-  return userFromCookie;
+  if (decodedToken && decodedToken.payload) {
+    const userFromCookie: UserInfo = {
+      id: decodedToken.payload.id,
+      username: decodedToken.payload.username,
+      email: decodedToken.payload.email,
+    };
+
+    return userFromCookie;
+  }
+
+  return null;
 }

@@ -1,25 +1,20 @@
 "use client";
 
+import { UserInfo } from "@/app/components/interface/UserInfo";
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { decodeToken } from "./decodeToken";
 
-export type UserInfo = {
-  username: string;
-  email: string;
-};
-
 type AuthContextType = {
-  user: any;
+  user: UserInfo | null;
 };
 
 type AuthProviderProps = {
   children: ReactNode;
 };
 
-export const AuthContext = createContext({} as AuthContextType);
-
-//TODO: Arrumar a busca dos dados da sessao do usuário logado,
-//  talvez usar middleware...
+export const AuthContext = createContext<AuthContextType>({
+  user: null, // Define um valor inicial para o contexto
+});
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserInfo | null>(null);
