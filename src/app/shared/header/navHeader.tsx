@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +14,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { destroyCookie } from "nookies";
 import { useContext } from "react";
+import { AuthContext } from "../contexts/authDataProvider";
 import { Sidebar } from "../sidebar/sidebar";
-import { AuthContext } from "../test/authDataProvider";
 
 export function NavHeader() {
   const { user } = useContext(AuthContext);
@@ -61,14 +62,15 @@ export function NavHeader() {
                         {user?.email}
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <Link href={""} className="text-white">
-                        <DropdownMenuItem
-                          className="flex justify-between cursor-pointer"
+                      <DropdownMenuItem>
+                        <Button
+                          className="min-w-full"
+                          variant={"secondary"}
                           onClick={() => logout()}
                         >
                           Sign out
-                        </DropdownMenuItem>
-                      </Link>
+                        </Button>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

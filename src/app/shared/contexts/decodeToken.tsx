@@ -1,6 +1,6 @@
 "use server";
 
-import { UserInfo } from "@/app/components/interface/UserInfo";
+import { UserInfo } from "@/app/(pages)/ComputerManagement/components/interface/UserInfo";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
 

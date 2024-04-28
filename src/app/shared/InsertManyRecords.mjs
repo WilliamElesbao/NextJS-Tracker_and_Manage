@@ -1,11 +1,9 @@
 async function makePostRequests() {
   const url = "http://localhost:3000/api/computermanagement/";
 
-  for (let i = 11000; i <= 11100; i++) {
-    // Gerar um valor único para o campo específico
+  for (let i = 11000; i <= 11010; i++) {
     const patrimony = i;
 
-    // Dados para a solicitação POST
     const data = {
       broughtBy_user_FK: 1,
       handedoverDate: null,
@@ -22,7 +20,6 @@ async function makePostRequests() {
       remarks: "headset funcionando só de um lado",
     };
 
-    // Realizar a solicitação POST
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -31,7 +28,6 @@ async function makePostRequests() {
       body: JSON.stringify({ data }),
     });
 
-    // Verifique a resposta se necessário
     if (response.ok) {
       console.log(`Solicitação POST ${i} foi bem-sucedida.`);
     } else {
@@ -40,5 +36,4 @@ async function makePostRequests() {
   }
 }
 
-// Chamar a função para fazer 50 solicitações POST
 makePostRequests();

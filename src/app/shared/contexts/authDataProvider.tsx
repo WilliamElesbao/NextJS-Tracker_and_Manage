@@ -1,6 +1,6 @@
 "use client";
 
-import { UserInfo } from "@/app/components/interface/UserInfo";
+import { UserInfo } from "@/app/(pages)/ComputerManagement/components/interface/UserInfo";
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { decodeToken } from "./decodeToken";
 

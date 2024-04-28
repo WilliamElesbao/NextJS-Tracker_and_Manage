@@ -45,10 +45,10 @@ export async function GET() {
     const responseData = allRecords.map((record) => ({
       ...record,
       handedoverDate: record.handedoverDate
-        ? format(new Date(record.handedoverDate), "dd/MM/yyyy HH:mm:ss")
+        ? format(new Date(record.handedoverDate), "dd/MM/yyy")
         : null,
       givenbackDate: record.givenbackDate
-        ? format(new Date(record.givenbackDate), "dd/MM/yyyy HH:mm:ss")
+        ? format(new Date(record.givenbackDate), "dd/MM/yyyy")
         : null,
       CreatedAt: format(new Date(record.CreatedAt), "dd/MM/yyyy HH:mm:ss"),
       UpdatedAt: format(new Date(record.UpdatedAt), "dd/MM/yyyy HH:mm:ss"),

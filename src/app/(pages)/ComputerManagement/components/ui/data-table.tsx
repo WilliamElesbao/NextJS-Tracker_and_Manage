@@ -1,5 +1,12 @@
 "use client";
 
+import { Button } from "@/app/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
 import { Input } from "@/app/components/ui/input";
 import {
   Table,
@@ -9,13 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/ui/table";
-import { Button } from "@/app/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
 import {
   ColumnFiltersState,
   SortingState,
@@ -28,8 +28,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-import { DataTableProps } from "./interface/DataTableProps";
-import { AddButtonOpenModalForm } from "./addBtnOpenModal-test";
+import { DataTableProps } from "../interface/DataTableProps";
+import { AddButtonOpenModalForm } from "./addBtnOpenModal";
 
 export function DataTable<TData, TValue>({
   columns,

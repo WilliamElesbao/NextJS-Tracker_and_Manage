@@ -11,8 +11,9 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-import action from "./actions";
-import { Records } from "./interface/RecordsTypes";
+import { toast } from "react-toastify";
+import action from "../actions/actions";
+import { Records } from "../interface/RecordsTypes";
 
 export const columns: ColumnDef<Records>[] = [
   {
@@ -82,11 +83,13 @@ export const columns: ColumnDef<Records>[] = [
 
           if (response.ok) {
             console.log("Registro excluído com sucesso.");
+            toast.success(`Deleted Computer: ${rowData.hostname}`);
             action();
             // TODO:  Atualizar a tabela sem recarregar toda a página (revalidatePath)
             // TODO: Toaster informando que registro foi excluido com sucesso
           } else {
             console.error("Falha ao excluir registro.");
+            toast.error("Error deleting record!");
             // TODO: Toaster informando erro ao excluir o registro
           }
         } catch (error) {
