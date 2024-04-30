@@ -27,6 +27,7 @@ export const config = {
   matcher: [
     "/",
     // "/api/computermanagement",
+    "/ComputerManagement/edit-record/:id",
     "/auth",
   ],
 };

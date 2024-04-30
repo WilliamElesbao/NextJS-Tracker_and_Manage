@@ -10,6 +10,7 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import action from "../actions/actions";
@@ -64,11 +65,11 @@ export const columns: ColumnDef<Records>[] = [
       const [selectedRowData, setSelectedRowData] = useState<Records>(
         {} as Records,
       );
+      const router = useRouter();
 
-      // TODO: criar a funcao para editar um registro a partir do id
       function getDataToEdit(rowData: Records) {
         setSelectedRowData(rowData);
-        console.log("TODO: fazer funcao para editar → ", rowData);
+        router.push(`/ComputerManagement/edit-record/?id=${rowData.id}`);
       }
 
       async function deleteComputer(rowData: Records) {
@@ -85,15 +86,12 @@ export const columns: ColumnDef<Records>[] = [
             console.log("Registro excluído com sucesso.");
             toast.success(`Deleted Computer: ${rowData.hostname}`);
             action();
-            // TODO:  Atualizar a tabela sem recarregar toda a página (revalidatePath)
-            // TODO: Toaster informando que registro foi excluido com sucesso
           } else {
             console.error("Falha ao excluir registro.");
             toast.error("Error deleting record!");
-            // TODO: Toaster informando erro ao excluir o registro
           }
         } catch (error) {
-          // TODO: Toaster informando erro ao se comunicar com a rota da api
+          toast.error("Puts se cai aqui deu ruim!");
           console.error("Erro ao realizar o Try:", error);
         }
       }

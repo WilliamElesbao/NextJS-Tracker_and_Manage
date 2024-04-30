@@ -27,7 +27,7 @@ import { z } from "zod";
 import { formSchema } from "../validation/zodSchema";
 import { DatePickerDemo } from "./date-picker";
 
-interface FormAddComp {
+export interface FormAddComp {
   hostname: string;
   patrimonyID: string;
   ticketNumber: string;
@@ -44,7 +44,7 @@ interface FormAddComp {
   handedoverDate: string | null;
 }
 
-type FormAddProps = {
+export type FormAddProps = {
   // TODO: minha propriedade onSubmitData Recebe uma funcao
   //  que recebe os dados do form
   onSubmitData: (func: any) => void;

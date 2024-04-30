@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import action from "../actions/actions";
 import FormAdd from "./form-add";
@@ -52,6 +52,9 @@ export function AddButtonOpenModalForm() {
       );
 
       if (!response.ok) {
+        const x = await response.json();
+        console.log(x);
+        toast.error(`Erro ao salvar:${x.message}`);
         throw new Error("Failed to add computer");
       }
 
@@ -65,13 +68,6 @@ export function AddButtonOpenModalForm() {
 
   return (
     <>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        pauseOnHover={false}
-        closeButton={false}
-        toastStyle={{ background: "black", color: "white" }}
-      />
       <Dialog open={isOpen}>
         <DialogTrigger asChild>
           <Button
@@ -82,6 +78,7 @@ export function AddButtonOpenModalForm() {
             Add
           </Button>
         </DialogTrigger>
+        {/* TODO: btn close X nao fecha, verificar... */}
         <DialogContent className="min-w-[90%] xl:min-w-[50%] h-auto">
           <DialogHeader>
             <DialogTitle>Control Form</DialogTitle>

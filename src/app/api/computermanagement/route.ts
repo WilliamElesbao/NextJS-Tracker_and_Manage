@@ -34,34 +34,50 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
-  try {
-    const allRecords = await prisma.equipmentManagement_TB.findMany({
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const idFromSearchParams = searchParams.get("id");
+
+  if (!idFromSearchParams) {
+    try {
+      const allRecords = await prisma.equipmentManagement_TB.findMany({
+        include: {
+          technician: { select: { id: true, username: true, email: true } },
+          user: true,
+        },
+      });
+      const responseData = allRecords.map((record) => ({
+        ...record,
+        handedoverDate: record.handedoverDate
+          ? format(new Date(record.handedoverDate), "dd/MM/yyy")
+          : null,
+        givenbackDate: record.givenbackDate
+          ? format(new Date(record.givenbackDate), "dd/MM/yyyy")
+          : null,
+        CreatedAt: format(new Date(record.CreatedAt), "dd/MM/yyyy HH:mm:ss"),
+        UpdatedAt: format(new Date(record.UpdatedAt), "dd/MM/yyyy HH:mm:ss"),
+      }));
+      return Response.json(responseData, { status: 200 });
+    } catch (error) {
+      return Response.json(
+        {
+          error:
+            "[api/computermanagement/route.ts]:\nErro ao buscar os registros",
+        },
+        { status: 500 },
+      );
+    }
+  } else {
+    const recordToEdit = await prisma.equipmentManagement_TB.findUnique({
+      where: {
+        id: idFromSearchParams,
+      },
       include: {
-        technician: { select: { id: true, username: true, email: true } },
+        technician: true,
         user: true,
       },
     });
-    const responseData = allRecords.map((record) => ({
-      ...record,
-      handedoverDate: record.handedoverDate
-        ? format(new Date(record.handedoverDate), "dd/MM/yyy")
-        : null,
-      givenbackDate: record.givenbackDate
-        ? format(new Date(record.givenbackDate), "dd/MM/yyyy")
-        : null,
-      CreatedAt: format(new Date(record.CreatedAt), "dd/MM/yyyy HH:mm:ss"),
-      UpdatedAt: format(new Date(record.UpdatedAt), "dd/MM/yyyy HH:mm:ss"),
-    }));
-    return Response.json(responseData, { status: 200 });
-  } catch (error) {
-    return Response.json(
-      {
-        error:
-          "[api/computermanagement/route.ts]:\nErro ao buscar os registros",
-      },
-      { status: 500 },
-    );
+    return Response.json(recordToEdit);
   }
 }
 

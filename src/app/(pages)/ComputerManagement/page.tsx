@@ -33,6 +33,6 @@ export default async function ComputerManagementPage() {
 // TODO:
 // C - done
 // R - done
-// U
+// U - done
 // D - done
 // validacao do form ADD e EDIT pelo lado do frontend
