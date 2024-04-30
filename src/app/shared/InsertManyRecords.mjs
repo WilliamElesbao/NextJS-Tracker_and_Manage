@@ -12,10 +12,10 @@ async function makePostRequests() {
       ticketNumber: 12345,
       hostname: `TM-NTB-${patrimony}`,
       patrimonyID: patrimony,
-      computerType: "PINEAPPLE",
+      computerType: "DSK",
       serviceTag: `ST${patrimony}`,
-      location: "matriz",
-      computerStatus: "obsolete",
+      location: "Matriz",
+      computerStatus: "Obsolete",
       othersEquipment: "notebook, headset",
       remarks: "headset funcionando só de um lado",
     };
