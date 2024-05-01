@@ -26,8 +26,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    // "/api/computermanagement",
-    "/ComputerManagement/edit-record/:id",
+    "/computer-management/",
+    "/computer-management/edit-record/:id",
     "/auth",
+    // "/api/computermanagement",
   ],
 };
