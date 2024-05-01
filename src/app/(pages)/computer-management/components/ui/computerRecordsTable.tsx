@@ -12,8 +12,7 @@ export async function ComputerRecordsTable() {
     },
   );
 
-  // TODO:
-  // only test
+  // TODO: remove delay, only test
   // await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const records: Records[] = await response.json();

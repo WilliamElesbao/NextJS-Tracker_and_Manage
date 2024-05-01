@@ -20,7 +20,7 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import action from "../components/actions/actions";
 import { Records } from "../components/types/RecordsTypes";
-import { DatePickerDemo } from "../components/ui/form/date-picker";
+import { DatePicker } from "../components/ui/form/date-picker";
 
 export default function EditRecord() {
   const idFromSearchParams = useSearchParams().get("id");
@@ -29,17 +29,20 @@ export default function EditRecord() {
   const [location, setLocation] = useState<string>("");
   const [computerStatus, setComputerStatus] = useState<string>("");
   const [broughtBy_user, setBroughtBy_user] = useState<string | number>(0);
-  const [handedoverDate, setHandedoverDate] = useState<Date | any>();
-  const [givenbackDate, setGivenbackDate] = useState<Date | any>();
+  const [handedoverDate, setHandedoverDate] = useState<string | null>(null);
+  const [givenbackDate, setGivenbackDate] = useState<string | null>(null);
   const { handleSubmit, register } = useForm();
   const router = useRouter();
 
   // TODO: isso poderia ser açoes
-  const handleHandedOverDate = (newDate: Date) => {
-    setHandedoverDate(newDate);
-  };
-  const handleGivenBackDate = (newDate: Date) => {
-    setGivenbackDate(newDate);
+
+  const handleDateChange = (
+    setDateFn: React.Dispatch<React.SetStateAction<string | null>>,
+  ) => {
+    return (newDate: string | null) => {
+      setDateFn(newDate);
+      return Promise.resolve(newDate);
+    };
   };
 
   useEffect(() => {
@@ -66,7 +69,6 @@ export default function EditRecord() {
   const onSubmit: SubmitHandler<FieldValues> = async (
     dataFromForm: Records | FieldValues,
   ) => {
-    console.log(idFromSearchParams);
     const data: {} | Records = {
       ticketNumber: Number(dataFromForm.ticketNumber),
       recivedBy_tech_FK: record?.technician.id,
@@ -288,9 +290,11 @@ export default function EditRecord() {
                     <Label className="content-center">
                       Handed Over at (From User)
                     </Label>
-                    <DatePickerDemo
-                      onDateChange={handleHandedOverDate}
-                      defaultValueTest={record.handedoverDate}
+                    <DatePicker
+                      onDateChange={handleDateChange(setHandedoverDate)}
+                      defaultValue={
+                        handedoverDate ? new Date(handedoverDate) : null
+                      }
                     />
                   </div>
 
@@ -298,9 +302,11 @@ export default function EditRecord() {
                     <Label className="content-center">
                       Given back at (To User)
                     </Label>
-                    <DatePickerDemo
-                      onDateChange={handleGivenBackDate}
-                      defaultValueTest={record.givenbackDate}
+                    <DatePicker
+                      onDateChange={handleDateChange(setGivenbackDate)}
+                      defaultValue={
+                        givenbackDate ? new Date(givenbackDate) : null
+                      }
                     />
                   </div>
                 </div>

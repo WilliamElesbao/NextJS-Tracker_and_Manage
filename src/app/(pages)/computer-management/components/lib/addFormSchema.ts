@@ -8,8 +8,8 @@ export const formSchema = z.object({
   patrimonyID: z.coerce.number().positive({ message: "Patrimony is invalid" }),
   ticketNumber: z.coerce
     .string()
-    .min(6, { message: "Min 6 chars" })
-    .max(8, { message: "Max 8 chars" }),
+    .min(5, { message: "Min 5 chars" })
+    .max(6, { message: "Max 6 chars" }),
   computerType: z.enum(["", "NTB", "DSK", "WKS"]),
   serviceTag: z.optional(z.string()),
   serialNumber: z.optional(z.string()),

@@ -15,12 +15,18 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import action from "../../actions/actions";
+import { Records } from "../../types/RecordsTypes";
 import FormAdd from "../form/form-add";
+
+export interface formDataObject {
+  data: Omit<Records, "id" | "user" | "technician" | "CreatedAt" | "UpdatedAt">;
+}
 
 export function AddButtonOpenModalForm() {
   const [isOpen, setIsOpen] = useState(false);
 
-  async function handleFormData(formData: FormData) {
+  async function handleFormData(formData: formDataObject) {
+    console.log(formData);
     try {
       const response = await fetch(
         "http://localhost:3000/api/computermanagement/",

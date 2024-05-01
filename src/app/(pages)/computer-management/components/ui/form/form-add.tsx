@@ -25,28 +25,31 @@ import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { formSchema } from "../../lib/addFormSchema";
-import { DatePickerDemo } from "./date-picker";
+import { formDataObject } from "../data-table/addBtnOpenModal";
+import { DatePicker } from "./date-picker";
 
 type FormAddProps = {
-  onSubmitData: (func: any) => void;
+  onSubmitData: (data: formDataObject) => Promise<void>;
 };
 
 export default function FormAdd({ onSubmitData }: FormAddProps) {
   const { user } = useContext(AuthContext);
-  const [handedOverDate, setHandedOverDate] = useState<Date>();
-  const [givenBackDate, setGivenBackDate] = useState<Date>();
+  const [handedOverDate, setHandedOverDate] = useState<string | null>(null);
+  const [givenBackDate, setGivenBackDate] = useState<string | null>(null);
   const [computerType, setComputerType] = useState("");
   const [location, setLocation] = useState("");
   const [computerStatus, setComputerStatus] = useState("");
   const [employee, setEmployee] = useState("");
 
   // TODO: isso poderia ser açoes
-  const handleHandedOverDate = (newDate: Date) => {
-    setHandedOverDate(newDate);
-  };
 
-  const handleGivenBackDate = (newDate: Date) => {
-    setGivenBackDate(newDate);
+  const handleDateChange = (
+    setDateFn: React.Dispatch<React.SetStateAction<string | null>>,
+  ) => {
+    return (newDate: string | null) => {
+      setDateFn(newDate);
+      return Promise.resolve(newDate);
+    };
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -334,7 +337,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Handed Over at (From User)</FormLabel>
                   <FormControl>
-                    <DatePickerDemo onDateChange={handleHandedOverDate} />
+                    <DatePicker
+                      onDateChange={handleDateChange(setHandedOverDate)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -348,7 +353,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Given back at (To User)</FormLabel>
                   <FormControl>
-                    <DatePickerDemo onDateChange={handleGivenBackDate} />
+                    <DatePicker
+                      onDateChange={handleDateChange(setGivenBackDate)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

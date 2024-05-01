@@ -33,7 +33,7 @@ model EquipmentManagement_TB {
   ticketNumber      Int
   hostname          String        @unique
   patrimonyID       Int           @unique
-  computerType      String // Enum: 'ntb', 'dsk', 'wks'
+  computerType      String
   serviceTag        String?       @unique
   serialNumber      String?       @unique
   location          String
