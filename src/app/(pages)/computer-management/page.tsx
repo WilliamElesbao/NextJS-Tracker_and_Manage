@@ -1,5 +1,5 @@
 import { NavHeader } from "@/app/components/header/navHeader";
-import { AuthProvider } from "@/app/contexts/authDataProvider";
+import { AuthProvider } from "@/app/contexts/AuthContext/authContext";
 import { Suspense } from "react";
 import { ComputerRecordsTable } from "./components/ui/computerRecordsTable";
 

@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { AuthContext } from "@/app/contexts/authDataProvider";
+import { AuthContext } from "@/app/contexts/AuthContext/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";

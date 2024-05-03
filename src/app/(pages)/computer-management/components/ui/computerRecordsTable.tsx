@@ -1,3 +1,5 @@
+"use server";
+
 import { Records } from "../types/RecordsTypes";
 import { columns } from "./data-table/columns";
 import { DataTable } from "./data-table/data-table";
@@ -12,7 +14,8 @@ export async function ComputerRecordsTable() {
     },
   );
 
-  // TODO: remove delay, only test
+  // TODO:
+  // only test
   // await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const records: Records[] = await response.json();

@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { Textarea } from "@/app/components/ui/textarea";
-import { AuthProvider } from "@/app/contexts/authDataProvider";
+import { AuthProvider } from "@/app/contexts/AuthContext/authContext";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -119,8 +120,12 @@ export default function EditRecord() {
       <AuthProvider>
         <NavHeader />
         <main className="container flex flex-col mt-5 gap-5">
-          <Link href={"/"}>
-            <Button>Go back</Button>
+          <Link
+            href={"/"}
+            className="border w-32 h-10 flex items-center justify-center rounded-md "
+          >
+            <ArrowLeft className="mr-2 size-4" />
+            Go Back
           </Link>
           <div className="flex flex-col justify-center items-center gap-2">
             <h2 className="text-xl text-black">Edit Record</h2>

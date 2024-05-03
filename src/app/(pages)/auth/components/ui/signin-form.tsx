@@ -2,12 +2,10 @@
 
 import { LoginData } from "@/app/api/auth/types/LoginData";
 import { Button } from "@/app/components/ui/button";
+import { AuthContext } from "@/app/contexts/AuthContext/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { setCookie } from "nookies";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { signin } from "../actions/authActions";
 import { loginSchema } from "../lib/signInFormSchema";
 import { AlertDestructive } from "./alert";
 
@@ -19,20 +17,16 @@ export function SignInForm() {
   } = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
   const [showAlert, setShowAlert] = useState(false);
   const [textError, setTextError] = useState("");
-  const router = useRouter();
+
+  const { signIn, user } = useContext(AuthContext);
 
   async function onsubmit(loginData: LoginData) {
-    const result = await signin(loginData);
+    const result: true | { error: string } = await signIn(loginData);
 
-    if (result.error) {
+    if (result === true) {
+    } else if (result && "error" in result) {
       setShowAlert(true);
       setTextError(result.error);
-    } else if (result.token) {
-      setCookie(undefined, "tracker_and_manage", result.token, {
-        maxAge: 60 * 60,
-        path: "/",
-      });
-      router.push("/");
     }
   }
 

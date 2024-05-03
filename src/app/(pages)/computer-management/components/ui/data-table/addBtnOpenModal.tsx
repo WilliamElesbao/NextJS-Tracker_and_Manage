@@ -26,7 +26,6 @@ export function AddButtonOpenModalForm() {
   const [isOpen, setIsOpen] = useState(false);
 
   async function handleFormData(formData: formDataObject) {
-    console.log(formData);
     try {
       const response = await fetch(
         "http://localhost:3000/api/computermanagement/",

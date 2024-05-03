@@ -2,6 +2,7 @@ import { cn } from "@/app/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { ToastContainer } from "react-toastify";
+import ThemeProvider from "./contexts/theme-provider";
 import "./styles/globals.css";
 
 const fontSans = FontSans({
@@ -26,14 +27,17 @@ export default function RootLayout({
             fontSans.variable,
           )}
         >
-          {children}
-          <ToastContainer
-            position="bottom-right"
-            autoClose={3000}
-            pauseOnHover={false}
-            closeButton={false}
-            toastStyle={{ background: "black", color: "white" }}
-          />
+          <ThemeProvider>
+            {children}
+
+            <ToastContainer
+              position="bottom-right"
+              autoClose={3000}
+              pauseOnHover={false}
+              closeButton={false}
+              toastStyle={{ background: "black", color: "white" }}
+            />
+          </ThemeProvider>
         </body>
       </html>
     </>
