@@ -10,20 +10,30 @@ export const formSchema = z.object({
     .string()
     .min(5, { message: "Min 5 chars" })
     .max(6, { message: "Max 6 chars" }),
-  computerType: z.enum(["", "NTB", "DSK", "WKS"]),
+  // computerType: z.enum(["", "NTB", "DSK", "WKS"]),
   serviceTag: z.optional(z.string()),
   serialNumber: z.optional(z.string()),
-  location: z.enum(["", "Matriz", "SP", "BH"]),
-  computerStatus: z.enum([
-    "",
-    "Under Maintenance",
-    "Available for use",
-    "Obsolete",
-  ]),
+  // location: z.enum(["", "Matriz", "SP", "BH"]),
+  // computerStatus: z.enum([
+  //   "",
+  //   "Under Maintenance",
+  //   "Available for use",
+  //   "Obsolete",
+  // ]),
   othersEquipment: z.optional(z.string()),
   remarks: z.optional(z.string()),
-  broughtBy_user_FK: z.coerce.number(),
-  recivedBy_tech_FK: z.optional(z.string()),
-  givenbackDate: z.optional(z.string()),
-  handedoverDate: z.optional(z.string()),
+  // broughtBy_user_FK: z.coerce.number(),
+  // recivedBy_tech_FK: z.optional(z.string()),
+  checkInDate: z.date({
+    required_error: "Select a Check-in date",
+  }),
+  // to check out
+  // givenBackBy_tech_FK: z
+  //   .string()
+  //   .min(1, { message: "TODO: VALIDATION USING ZOD" }),
+  // WhoReceived_user_FK: z
+  //   .string()
+  //   .min(1, { message: "TODO: VALIDATION USING ZOD" }),
+  // checkOutDate: z.string().min(1, { message: "TODO: VALIDATION USING ZOD" }),
+  // checkoutStatus: z.string().min(1, { message: "TODO: VALIDATION USING ZOD" }),
 });

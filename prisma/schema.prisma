@@ -25,23 +25,30 @@ model User_TB {
 }
 
 model EquipmentManagement_TB {
-  id                String        @id @default(uuid())
-  broughtBy_user_FK Int
-  handedoverDate    DateTime?
-  recivedBy_tech_FK String
-  givenbackDate     DateTime?
-  ticketNumber      Int
-  hostname          String        @unique
-  patrimonyID       Int           @unique
-  computerType      String
-  serviceTag        String?       @unique
-  serialNumber      String?       @unique
-  location          String
-  computerStatus    String
-  othersEquipment   String
-  remarks           String
-  CreatedAt         DateTime      @default(now())
-  UpdatedAt         DateTime      @updatedAt
-  user              User_TB       @relation(fields: [broughtBy_user_FK], references: [id])
-  technician        Technician_TB @relation(fields: [recivedBy_tech_FK], references: [id])
+  // to check in
+  id                  String    @id @default(uuid())
+  ticketNumber        Int
+  recivedBy_tech_FK   String
+  hostname            String    @unique
+  patrimonyID         Int       @unique
+  serviceTag          String?   @unique
+  serialNumber        String?   @unique
+  computerType        String
+  location            String
+  computerStatus      String
+  broughtBy_user_FK   Int
+  othersEquipment     String
+  remarks             String
+  checkInDate         DateTime
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  // to check out
+  givenBackBy_tech_FK String?
+  WhoReceived_user_FK Int?
+  checkOutDate        DateTime?
+  checkoutStatus      Boolean?
+
+  // relation
+  user       User_TB       @relation(fields: [broughtBy_user_FK], references: [id])
+  technician Technician_TB @relation(fields: [recivedBy_tech_FK], references: [id])
 }

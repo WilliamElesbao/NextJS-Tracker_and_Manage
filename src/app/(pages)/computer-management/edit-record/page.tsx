@@ -30,7 +30,7 @@ export default function EditRecord() {
   const [location, setLocation] = useState<string>("");
   const [computerStatus, setComputerStatus] = useState<string>("");
   const [broughtBy_user, setBroughtBy_user] = useState<string | number>(0);
-  const [handedoverDate, setHandedoverDate] = useState<string | null>(null);
+  const [handedoverDate, setHandedoverDate] = useState<any>(null);
   const [givenbackDate, setGivenbackDate] = useState<string | null>(null);
   const { handleSubmit, register } = useForm();
   const router = useRouter();
@@ -59,8 +59,7 @@ export default function EditRecord() {
         setLocation(reqDataFromAPI.location);
         setComputerStatus(reqDataFromAPI.computerStatus);
         setBroughtBy_user(reqDataFromAPI.broughtBy_user_FK);
-        setHandedoverDate(reqDataFromAPI.handedoverDate);
-        setGivenbackDate(reqDataFromAPI.givenbackDate);
+        setHandedoverDate(reqDataFromAPI.checkInDate);
       }
     };
 
@@ -85,8 +84,8 @@ export default function EditRecord() {
       broughtBy_user_FK: Number(broughtBy_user),
       othersEquipment: dataFromForm.othersEquipment,
       remarks: dataFromForm.remarks,
-      handedoverDate: handedoverDate,
-      givenbackDate: givenbackDate,
+      checkInDate: handedoverDate,
+      // givenbackDate: givenbackDate,
     };
 
     try {
@@ -141,21 +140,50 @@ export default function EditRecord() {
               >
                 <div className="grid grid-cols-2 gap-2">
                   <div id="ticketNumber">
-                    <Label className="content-center">Ticket Number</Label>
+                    <Label className="content-center">Número SATI</Label>
                     <Input
                       defaultValue={record.ticketNumber}
                       {...register("ticketNumber")}
                     ></Input>
                   </div>
 
+                  <div>
+                    <Label className="content-center">Entrada em</Label>
+                    <DatePicker
+                      onDateChange={handleDateChange(setHandedoverDate)}
+                      defaultValue={
+                        handedoverDate ? new Date(handedoverDate) : null
+                      }
+                    />
+                  </div>
+
                   <div className="technician">
                     <Label className="content-center">
-                      Recived By (Technician)
+                      Entregue ao técnico
                     </Label>
                     <Input
                       defaultValue={record.technician.username}
                       disabled
                     ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">
+                      Entregue pelo usuário
+                    </Label>
+                    <Select
+                      defaultValue={record.broughtBy_user_FK.toString()}
+                      onValueChange={setBroughtBy_user}
+                      required
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select an employee" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Fulano</SelectItem>
+                        <SelectItem value="2">Beutrano</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
@@ -199,7 +227,7 @@ export default function EditRecord() {
                   </div>
 
                   <div>
-                    <Label className="content-center">Type</Label>
+                    <Label className="content-center">Tipo / Modelo</Label>
                     <Select
                       onValueChange={setComputerType}
                       required
@@ -217,7 +245,7 @@ export default function EditRecord() {
                   </div>
 
                   <div>
-                    <Label className="content-center">Location</Label>
+                    <Label className="content-center">Localização</Label>
                     <Select
                       defaultValue={record.location}
                       onValueChange={setLocation}
@@ -235,7 +263,7 @@ export default function EditRecord() {
                   </div>
 
                   <div>
-                    <Label className="content-center">Computer Status</Label>
+                    <Label className="content-center">Status da máquina</Label>
                     <Select
                       defaultValue={record.computerStatus}
                       onValueChange={setComputerStatus}
@@ -257,24 +285,7 @@ export default function EditRecord() {
                   </div>
 
                   <div>
-                    <Label className="content-center">Brought by (User)</Label>
-                    <Select
-                      defaultValue={record.broughtBy_user_FK.toString()}
-                      onValueChange={setBroughtBy_user}
-                      required
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select an employee" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">Fulano</SelectItem>
-                        <SelectItem value="2">Beutrano</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="content-center">Other Equipaments</Label>
+                    <Label className="content-center">Outros periféricos</Label>
                     <Textarea
                       defaultValue={record.othersEquipment}
                       {...register("othersEquipment")}
@@ -283,35 +294,11 @@ export default function EditRecord() {
                   </div>
 
                   <div>
-                    <Label className="content-center">Remarks (Obs.)</Label>
+                    <Label className="content-center">Observações</Label>
                     <Textarea
                       defaultValue={record.remarks}
                       {...register("remarks")}
                       className="resize-none w-full h-20 md:h-40"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="content-center">
-                      Handed Over at (From User)
-                    </Label>
-                    <DatePicker
-                      onDateChange={handleDateChange(setHandedoverDate)}
-                      defaultValue={
-                        handedoverDate ? new Date(handedoverDate) : null
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="content-center">
-                      Given back at (To User)
-                    </Label>
-                    <DatePicker
-                      onDateChange={handleDateChange(setGivenbackDate)}
-                      defaultValue={
-                        givenbackDate ? new Date(givenbackDate) : null
-                      }
                     />
                   </div>
                 </div>

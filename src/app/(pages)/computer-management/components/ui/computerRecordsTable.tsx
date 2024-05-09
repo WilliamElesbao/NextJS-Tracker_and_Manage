@@ -22,7 +22,7 @@ export async function ComputerRecordsTable() {
 
   return (
     <>
-      <DataTable columns={columns} data={records} />
+      <DataTable columns={columns} data={records}/>
     </>
   );
 }

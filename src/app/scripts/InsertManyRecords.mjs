@@ -5,19 +5,25 @@ async function makePostRequests() {
     const patrimony = i;
 
     const data = {
-      broughtBy_user_FK: 1,
-      handedoverDate: null,
+      ticketNumber: i,
       recivedBy_tech_FK: "cf5c6765-472c-474e-8156-b4c9c34d66a0",
-      givenbackDate: null,
-      ticketNumber: 12345,
+      // recivedBy_tech_FK: "6b31dfe2-db1c-47be-a0e9-4f3aa9dbdf17",
       hostname: `TM-NTB-${patrimony}`,
       patrimonyID: patrimony,
-      computerType: "DSK",
-      serviceTag: `ST${patrimony}`,
+      serviceTag: `ST-NTB-0${i}`,
+      serialNumber: null,
+      computerType: "NTB",
       location: "Matriz",
-      computerStatus: "Obsolete",
-      othersEquipment: "notebook, headset",
-      remarks: "headset funcionando só de um lado",
+      computerStatus: "Available",
+      broughtBy_user_FK: 1,
+      // broughtBy_user_FK: 2,
+      othersEquipment: "",
+      remarks: "",
+      checkInDate: new Date(),
+      givenBackBy_tech_FK: null,
+      WhoReceived_user_FK: null,
+      checkOutDate: null,
+      checkoutStatus: null,
     };
 
     const response = await fetch(url, {
@@ -25,7 +31,7 @@ async function makePostRequests() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ data }),
+      body: JSON.stringify(data),
     });
 
     if (response.ok) {

@@ -15,14 +15,19 @@ import { useState } from "react";
 type DatePickerProps = {
   defaultValue?: Date | null;
   onDateChange: (newDate: string | null) => void;
+  disabled?: boolean;
 };
 
-export function DatePicker({ onDateChange, defaultValue }: DatePickerProps) {
+export function DatePicker({
+  onDateChange,
+  defaultValue,
+  disabled,
+}: DatePickerProps) {
   const [date, setDate] = useState<Date | null | undefined>(defaultValue);
 
   const handleDateChange = (newDate: Date | null | undefined) => {
     setDate(newDate);
-
+    
     const newDateString = newDate ? newDate.toISOString() : null;
     onDateChange(newDateString);
   };
@@ -38,6 +43,7 @@ export function DatePicker({ onDateChange, defaultValue }: DatePickerProps) {
             "w-full justify-start text-left font-normal",
             !date && "text-muted-foreground",
           )}
+          disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(date, dateFormat) : "Pick a date"}
