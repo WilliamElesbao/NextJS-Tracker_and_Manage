@@ -21,23 +21,24 @@ export default function RootLayout({
   return (
     <>
       <html lang="en">
+        <head>
+          <link rel="icon" href="/img/logo.ico" sizes="any" />
+        </head>
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
             fontSans.variable,
           )}
         >
-          <ThemeProvider>
-            {children}
+          {children}
 
-            <ToastContainer
-              position="bottom-right"
-              autoClose={3000}
-              pauseOnHover={false}
-              closeButton={false}
-              toastStyle={{ background: "black", color: "white" }}
-            />
-          </ThemeProvider>
+          <ToastContainer
+            position="bottom-right"
+            autoClose={3000}
+            pauseOnHover={false}
+            closeButton={false}
+            toastStyle={{ background: "black", color: "white" }}
+          />
         </body>
       </html>
     </>

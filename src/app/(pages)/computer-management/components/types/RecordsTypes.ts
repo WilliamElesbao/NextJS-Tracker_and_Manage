@@ -21,7 +21,7 @@ export interface Records {
   serialNumber?: string | null;
   computerType: "NTB" | "DSK" | "WKS";
   location: "Matriz" | "SP" | "BH";
-  computerStatus: "Available" | "Under  Maintenance" | "Obsolete";
+  computerStatus: "Available" | "Under Maintenance" | "Obsolete";
   broughtBy_user_FK: string | number;
   othersEquipment?: string | null;
   remarks?: string | null;

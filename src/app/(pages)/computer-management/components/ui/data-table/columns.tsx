@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
+import { Button, buttonVariants } from "@/app/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import action from "../../actions/actions";
 import { Records } from "../../types/RecordsTypes";
+import React from "react";
+import { cn } from "@/app/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { VariantProps } from "class-variance-authority";
 
 export const columns: ColumnDef<Records>[] = [
   {
@@ -57,6 +61,7 @@ export const columns: ColumnDef<Records>[] = [
     header: "Atualiz. em",
   },
   {
+    accessorKey: "actions",
     header: "Actions",
     id: "actions",
     cell: ({ row }) => {
@@ -144,23 +149,26 @@ export const columns: ColumnDef<Records>[] = [
       //   </>
       // );
 
+      const isOpen = function getId(id: any) {
+        console.log(id);
+        return id;
+      };
+
       if (checkoutStatus) {
         // Se checkoutStatus for true, renderize ações específicas para checkoutStatus true
         return (
-          <div className="flex gap-2">
-            <Button
-              className=""
-              // onClick={() => handleSpecificAction1(rowData.id)}
-            >
-              Detalhes
-            </Button>
-            <Button
-              // onClick={() => handleSpecificAction2(rowData.id)}
-              disabled
-            >
-              Enviar e-mail
-            </Button>
-          </div>
+          <></>
+          // <div className="flex gap-2">
+          //   <Button className="" onClick={() => isOpen(rowData.id)}>
+          //     Detalhes
+          //   </Button>
+          //   <Button
+          //     // onClick={() => handleSpecificAction2(rowData.id)}
+          //     disabled
+          //   >
+          //     Enviar e-mail
+          //   </Button>
+          // </div>
         );
       } else {
         // Se checkoutStatus for falso, renderize botões padrão

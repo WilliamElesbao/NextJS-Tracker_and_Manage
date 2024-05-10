@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -40,13 +41,12 @@ import {
 import * as React from "react";
 import { useContext, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import action from "../../actions/actions";
 import { DataTableProps } from "../../types/DataTableProps";
 import { Records } from "../../types/RecordsTypes";
 import { DatePicker } from "../form/date-picker";
 import { AddButtonOpenModalForm } from "./addBtnOpenModal";
-import { Badge } from "@/app/components/ui/badge";
-import { toast } from "react-toastify";
-import action from "../../actions/actions";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -84,6 +84,8 @@ export function DataTable<TData, TValue>({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [isOpenDetails, setIsOpenDetails] = useState(false);
+
   const [dataById, setDataById] = useState<Records>();
 
   const [recivedBy_tech_FK, setRecivedBy_tech_FK] = useState<string>();
@@ -95,6 +97,8 @@ export function DataTable<TData, TValue>({
     string | number
   >();
   const [checkInDate, setCheckInDate] = useState<string | Date>();
+
+  const [techDetails, setTechDetails] = useState<string | null>();
 
   const { user } = useContext(AuthContext);
   const [chkBoxIsActive, setChkBoxIsActive] = useState(false);
@@ -151,28 +155,6 @@ export function DataTable<TData, TValue>({
     } else {
       console.warn("Nenhum dado retornado para o ID fornecido.");
     }
-    // setValue("ticketNumber", result.ticketNumber);
-    // setValue("hostname", result.hostname);
-    // setValue("patrimonyID", result.patrimonyID);
-    // setValue("serviceTag", result.serviceTag);
-    // setValue("serialNumber", result.serialNumber);
-    // setValue("othersEquipment", result.othersEquipment);
-    // setValue("remarks", result.remarks);
-
-    // Continue definindo os valores para os campos restantes
-    // setValue("computerType", result.computerType);
-    // setComputerType(result.computerType);
-    // setLocation(result.location);
-    // setComputerStatus(result.computerStatus);
-    // setBroughtBy_user(result.broughtBy_user_FK);
-    // setHandedoverDate(result.handedoverDate);
-    // setGivenbackDate(result.givenbackDate);
-    // setGivenbackBy_tech_FK(result.technician.id)
-    // setValue("location", result.location);
-    // setValue("computerStatus", result.computerStatus);
-    // setValue("broughtBy_user_FK", result.broughtBy_user_FK);
-    // setValue("handedoverDate", result.handedoverDate);
-    // setValue("givenbackDate", result.givenbackDate);
   };
 
   const handleCheckboxChange = () => {
@@ -180,7 +162,8 @@ export function DataTable<TData, TValue>({
   };
 
   const closeModal = () => {
-    setIsModalOpen(!setIsModalOpen);
+    setIsModalOpen(false);
+    setIsOpenDetails(false);
   };
 
   const checkoutConfirmed: SubmitHandler<FieldValues> = async (
@@ -241,6 +224,56 @@ export function DataTable<TData, TValue>({
     }
 
     console.log(data);
+  };
+
+  const openDetails = async (id: string) => {
+    // TODO: acho que posso remover setSelectedRowId
+
+    const response = await fetch(`/api/computermanagement/?id=${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result: Records = await response.json();
+
+    console.log(result);
+
+    const fetchTechByID = await fetch(
+      `/api/tech/?techID=${result.givenBackBy_tech_FK}`,
+    );
+
+    const techDetails = await fetchTechByID.json();
+
+    console.log(techDetails);
+
+    setTechDetails(techDetails);
+
+    setDataById(result);
+
+    setIsOpenDetails(true);
+
+    // if (result) {
+    //   setValue("ticketNumber", result.ticketNumber);
+    //   setValue("hostname", result.hostname || "");
+    //   setValue("patrimonyID", result.patrimonyID);
+    //   setValue("serviceTag", result?.serviceTag);
+    //   setValue("serialNumber", result?.serialNumber);
+    //   setValue("othersEquipment", result?.othersEquipment);
+    //   setValue("remarks", result?.remarks);
+
+    //   setRecivedBy_tech_FK(result.technician.id);
+    //   setComputerType(result.computerType);
+    //   setLocation(result.location);
+    //   setComputerStatus(result.computerStatus);
+    //   setBroughtBy_user_FK(result.broughtBy_user_FK);
+    //   setWhoReceived_user_FK(result.broughtBy_user_FK);
+    //   setCheckInDate(result.checkInDate);
+    // } else {
+    //   console.warn("Nenhum dado retornado para o ID fornecido.");
+    // }
+    console.log(isOpenDetails);
   };
 
   return (
@@ -359,6 +392,32 @@ export function DataTable<TData, TValue>({
                           cell.getContext(),
                         )
                       )}
+                      <>
+                        {cell.column.columnDef.accessorKey === "actions" &&
+                          row.getValue("checkoutStatus") && (
+                            <>
+                              <div className="flex items-center">
+                                <Button
+                                  className="border rounded-md mr-2"
+                                  onClick={() => {
+                                    openDetails(row.original.id);
+                                  }}
+                                >
+                                  Detalhes
+                                </Button>
+                                {/* <Button
+                                  className="border rounded-md"
+                                  onClick={() => {
+                                    // Adicione a lógica para o segundo botão extra aqui
+                                    // Ex: handleSecondExtraButtonClick(row.original.id)
+                                  }}
+                                >
+                                  Enviar e-mail
+                                </Button> */}
+                              </div>
+                            </>
+                          )}
+                      </>
                     </TableCell>
                   ))}
                 </TableRow>
@@ -531,7 +590,7 @@ export function DataTable<TData, TValue>({
                   </div>
 
                   <div>
-                    <Label className="content-center">Type</Label>
+                    <Label className="content-center">Tipo / Modelo</Label>
                     <Select
                       onValueChange={setComputerType}
                       required
@@ -550,7 +609,7 @@ export function DataTable<TData, TValue>({
                   </div>
 
                   <div>
-                    <Label className="content-center">Location</Label>
+                    <Label className="content-center">Localização</Label>
                     <Select
                       defaultValue={dataById?.location}
                       onValueChange={setLocation}
@@ -569,7 +628,7 @@ export function DataTable<TData, TValue>({
                   </div>
 
                   <div>
-                    <Label className="content-center">Computer Status</Label>
+                    <Label className="content-center">Status da máquina</Label>
                     <Select
                       defaultValue={dataById?.computerStatus}
                       onValueChange={setComputerStatus}
@@ -581,7 +640,7 @@ export function DataTable<TData, TValue>({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Available">Disponível</SelectItem>
-                        <SelectItem value="Under  Maintenance">
+                        <SelectItem value="Under Maintenance">
                           Em manutenção
                         </SelectItem>
                         <SelectItem value="Obsolete">Obsoleto</SelectItem>
@@ -654,6 +713,239 @@ export function DataTable<TData, TValue>({
                 <Button type="submit" className="absolute right-6 bottom-3">
                   Concluir Check-out
                 </Button>
+                <Button
+                  onClick={closeModal}
+                  variant={"destructive"}
+                  className="absolute left-6 bottom-3"
+                >
+                  Fechar
+                </Button>
+              </form>
+            </div>
+
+            {/* Botão para fechar o modal */}
+          </div>
+        </div>
+      )}
+
+      {/* Modal details*/}
+      {isOpenDetails && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white xl:w-[65%] rounded shadow-lg p-6 pb-12">
+            <div className="flex flex-col gap-3">
+              <div className="header-content">
+                <h2 className="">Detalhes - Check-out</h2>
+              </div>
+
+              <form
+                onSubmit={handleSubmit(checkoutConfirmed)}
+                method="PUT"
+                className="flex flex-col gap-5 w-full p-6"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div id="ticketNumber">
+                    <Label className="content-center">Numero SATI</Label>
+                    <Input
+                      disabled={!chkBoxIsActive}
+                      defaultValue={dataById?.ticketNumber}
+                      {...register("ticketNumber")}
+                    ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Entrada em</Label>
+                    <DatePicker
+                      // onDateChange={handleDateChange(setHandedoverDate)}
+                      defaultValue={dataById?.checkInDate}
+                      disabled={true}
+                    />
+                  </div>
+
+                  <div className="technician">
+                    <Label className="content-center">
+                      Entregue ao técnico
+                    </Label>
+                    <Input
+                      defaultValue={dataById?.technician.username}
+                      disabled
+                    ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">
+                      Entregue pelo usuário
+                    </Label>
+                    <Select
+                      defaultValue={dataById?.broughtBy_user_FK.toString()}
+                      onValueChange={setBroughtBy_user_FK}
+                      required
+                      disabled
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select an employee" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Fulano</SelectItem>
+                        <SelectItem value="2">Beutrano</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Hostname</Label>
+                    <Input
+                      defaultValue={dataById?.hostname}
+                      {...register("hostname")}
+                      disabled
+                    ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Patrimônio</Label>
+                    <Input
+                      defaultValue={dataById?.patrimonyID}
+                      {...register("patrimonyID")}
+                      disabled
+                    ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Service Tag</Label>
+                    {dataById?.serviceTag ? (
+                      <Input
+                        defaultValue={dataById?.serviceTag}
+                        {...register("serviceTag")}
+                        disabled
+                      ></Input>
+                    ) : (
+                      <Input {...register("serviceTag")} disabled></Input>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Serial Number</Label>
+                    {dataById?.serialNumber ? (
+                      <Input
+                        defaultValue={dataById.serialNumber}
+                        {...register("serialNumber")}
+                        disabled
+                      ></Input>
+                    ) : (
+                      <Input {...register("serialNumber")} disabled></Input>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Tipo / Modelo</Label>
+                    <Select
+                      onValueChange={setComputerType}
+                      required
+                      defaultValue={dataById?.computerType}
+                      disabled
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NTB">Notebook</SelectItem>
+                        <SelectItem value="DSK">Desktop</SelectItem>
+                        <SelectItem value="WKS">Workstation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Localização</Label>
+                    <Select
+                      defaultValue={dataById?.location}
+                      onValueChange={setLocation}
+                      required
+                      disabled
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Matriz">Matriz</SelectItem>
+                        <SelectItem value="SP">São Paulo</SelectItem>
+                        <SelectItem value="BH">Belo Horizonte</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Status da máquina</Label>
+                    <Select
+                      defaultValue={dataById?.computerStatus}
+                      onValueChange={setComputerStatus}
+                      required
+                      disabled
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Available">Disponível</SelectItem>
+                        <SelectItem value="Under Maintenance">
+                          Em manutenção
+                        </SelectItem>
+                        <SelectItem value="Obsolete">Obsoleto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* TODO: adicionar esse campo */}
+                  <div>
+                    <Label className="content-center">
+                      Entregue pelo técnico
+                    </Label>
+                    <Input
+                      defaultValue={techDetails?.username}
+                      disabled
+                    ></Input>
+                  </div>
+
+                  <div>
+                    <Label className="content-center">
+                      Entregue ao usuário
+                    </Label>
+                    <Select
+                      defaultValue={dataById?.WhoReceived_user_FK.toString()}
+                      onValueChange={setWhoReceived_user_FK}
+                      required
+                      disabled
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select an employee" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Fulano</SelectItem>
+                        <SelectItem value="2">Beutrano</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div></div>
+
+                  <div>
+                    <Label className="content-center">Outros periféricos</Label>
+                    <Textarea
+                      defaultValue={dataById?.othersEquipment}
+                      {...register("othersEquipment")}
+                      className="resize-none w-full h-40"
+                      disabled
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="content-center">Observações</Label>
+                    <Textarea
+                      defaultValue={dataById?.remarks}
+                      {...register("remarks")}
+                      className="resize-none w-full h-40"
+                      disabled
+                    />
+                  </div>
+                </div>
                 <Button
                   onClick={closeModal}
                   variant={"destructive"}

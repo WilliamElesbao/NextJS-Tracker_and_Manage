@@ -276,7 +276,7 @@ export default function EditRecord() {
                         <SelectItem value="Under Maintenance">
                           Under Maintenance
                         </SelectItem>
-                        <SelectItem value="Available for use">
+                        <SelectItem value="Available">
                           Available for use
                         </SelectItem>
                         <SelectItem value="Obsolete">Obsolete</SelectItem>

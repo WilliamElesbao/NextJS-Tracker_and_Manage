@@ -37,8 +37,8 @@ model EquipmentManagement_TB {
   location            String
   computerStatus      String
   broughtBy_user_FK   Int
-  othersEquipment     String
-  remarks             String
+  othersEquipment     String?
+  remarks             String?
   checkInDate         DateTime
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
