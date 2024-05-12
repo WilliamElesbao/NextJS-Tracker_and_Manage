@@ -1,4 +1,3 @@
-import { UserInfo } from "@/app/utils/decodeToken";
 import { ColumnDef } from "@tanstack/react-table";
 
 export interface DataTableProps<TData, TValue> {

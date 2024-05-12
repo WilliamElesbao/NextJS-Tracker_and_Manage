@@ -15,7 +15,7 @@ export default function SignInPage() {
                 width={350}
                 height={100}
                 quality={100}
-                priority={false}
+                priority={true}
               />
             </div>
 

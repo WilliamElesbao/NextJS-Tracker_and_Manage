@@ -28,6 +28,7 @@ import {
 import { Textarea } from "@/app/components/ui/textarea";
 import { AuthContext } from "@/app/contexts/AuthContext/authContext";
 import {
+  ColumnDefBase,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -42,11 +43,16 @@ import * as React from "react";
 import { useContext, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import action from "../../actions/actions";
-import { DataTableProps } from "../../types/DataTableProps";
-import { Records } from "../../types/RecordsTypes";
-import { DatePicker } from "../form/date-picker";
-import { AddButtonOpenModalForm } from "./addBtnOpenModal";
+import action from "../../lib/action-revalidate-tag";
+import { DataTableProps } from "../../lib/types/DataTableProps";
+import {
+  ComputerStatus,
+  ComputerType,
+  Location,
+  Records,
+} from "../../lib/types/RecordsTypes";
+import { AddBtn } from "./add-button";
+import { DatePicker } from "./date-picker";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -80,7 +86,7 @@ export function DataTable<TData, TValue>({
 
   const [showCheckOutTrue, setShowCheckOutTrue] = useState(false);
 
-  const [selectedRowId, setSelectedRowId] = useState<number>();
+  const [selectedRowId, setSelectedRowId] = useState<number | string>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -89,16 +95,18 @@ export function DataTable<TData, TValue>({
   const [dataById, setDataById] = useState<Records>();
 
   const [recivedBy_tech_FK, setRecivedBy_tech_FK] = useState<string>();
-  const [computerType, setComputerType] = useState<string>();
-  const [location, setLocation] = useState<string>();
-  const [computerStatus, setComputerStatus] = useState<string>();
+  const [computerType, setComputerType] = useState<ComputerType | string>();
+  const [location, setLocation] = useState<Location | string>();
+  const [computerStatus, setComputerStatus] = useState<
+    ComputerStatus | string
+  >();
   const [broughtBy_user_FK, setBroughtBy_user_FK] = useState<string | number>();
   const [whoReceived_user_FK, setWhoReceived_user_FK] = useState<
-    string | number
+    string | number | null | undefined
   >();
   const [checkInDate, setCheckInDate] = useState<string | Date>();
 
-  const [techDetails, setTechDetails] = useState<string | null>();
+  const [techDetails, setTechDetails] = useState<TechDetails | null>();
 
   const { user } = useContext(AuthContext);
   const [chkBoxIsActive, setChkBoxIsActive] = useState(false);
@@ -106,19 +114,19 @@ export function DataTable<TData, TValue>({
 
   const handleCheckboxFilter = () => {
     setShowCheckOutTrue(!showCheckOutTrue);
-    console.log(showCheckOutTrue);
   };
+
   const filteredRows = table.getRowModel().rows.filter((row) => {
     // Se o checkbox estiver selecionado, filtra as linhas com checkoutStatus === true
     if (showCheckOutTrue) {
       return row.getValue("checkoutStatus") === true;
     }
     // Caso contrário, exibe todas as linhas
-    // return true;
-    return row.getValue("checkoutStatus") !== true;
+    return true;
+    // return row.getValue("checkoutStatus") !== true;
   });
 
-  const handleCheckoutClick = async (rowId: number) => {
+  const handleCheckoutClick = async (rowId: number | string) => {
     // TODO: acho que posso remover setSelectedRowId
     setSelectedRowId(rowId);
 
@@ -130,7 +138,6 @@ export function DataTable<TData, TValue>({
     });
 
     const result: Records = await response.json();
-    console.log(result);
 
     setIsModalOpen(true);
 
@@ -222,8 +229,12 @@ export function DataTable<TData, TValue>({
     } catch (error) {
       console.error("Erro:", error);
     }
+  };
 
-    console.log(data);
+  type TechDetails = {
+    id: string;
+    username: string;
+    email: string;
   };
 
   const openDetails = async (id: string) => {
@@ -238,43 +249,28 @@ export function DataTable<TData, TValue>({
 
     const result: Records = await response.json();
 
-    console.log(result);
-
     const fetchTechByID = await fetch(
       `/api/tech/?techID=${result.givenBackBy_tech_FK}`,
     );
 
     const techDetails = await fetchTechByID.json();
 
-    console.log(techDetails);
-
     setTechDetails(techDetails);
 
     setDataById(result);
+    setCheckInDate(result.checkInDate);
 
     setIsOpenDetails(true);
-
-    // if (result) {
-    //   setValue("ticketNumber", result.ticketNumber);
-    //   setValue("hostname", result.hostname || "");
-    //   setValue("patrimonyID", result.patrimonyID);
-    //   setValue("serviceTag", result?.serviceTag);
-    //   setValue("serialNumber", result?.serialNumber);
-    //   setValue("othersEquipment", result?.othersEquipment);
-    //   setValue("remarks", result?.remarks);
-
-    //   setRecivedBy_tech_FK(result.technician.id);
-    //   setComputerType(result.computerType);
-    //   setLocation(result.location);
-    //   setComputerStatus(result.computerStatus);
-    //   setBroughtBy_user_FK(result.broughtBy_user_FK);
-    //   setWhoReceived_user_FK(result.broughtBy_user_FK);
-    //   setCheckInDate(result.checkInDate);
-    // } else {
-    //   console.warn("Nenhum dado retornado para o ID fornecido.");
-    // }
-    console.log(isOpenDetails);
   };
+
+  interface RowData {
+    checkOutDate?: string;
+    id: string;
+  }
+
+  interface ColumnDefinition extends ColumnDefBase<RowData, unknown> {
+    accessorKey: string;
+  }
 
   return (
     <>
@@ -289,6 +285,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+
         <Label className="border rounded-md cursor-pointer flex space-x-3 items-center p-3">
           <input
             type="checkbox"
@@ -299,7 +296,7 @@ export function DataTable<TData, TValue>({
         </Label>
 
         <div className="flex gap-2">
-          <AddButtonOpenModalForm />
+          <AddBtn />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -358,22 +355,26 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {cell.column.columnDef.accessorKey ===
-                      "checkoutStatus" ? (
+                      {(cell.column.columnDef as ColumnDefinition)
+                        .accessorKey === "checkoutStatus" ? (
                         row.getValue("checkInDate") ? (
                           // Verifica se checkoutStatus é verdadeiro
                           row.getValue("checkoutStatus") ? (
                             <>
                               <Badge className="w-full flex flex-col items-center">
                                 <span>Check-out em:</span>
-                                <span>{row.original.checkOutDate}</span>
+                                <span>
+                                  {(row.original as RowData).checkOutDate}
+                                </span>
                               </Badge>
                             </>
                           ) : (
                             <Button
                               className="border rounded-md w-full h-8"
                               onClick={() =>
-                                handleCheckoutClick(row.original.id)
+                                handleCheckoutClick(
+                                  (row.original as RowData).id,
+                                )
                               }
                               variant={"secondary"}
                             >
@@ -393,14 +394,15 @@ export function DataTable<TData, TValue>({
                         )
                       )}
                       <>
-                        {cell.column.columnDef.accessorKey === "actions" &&
+                        {(cell.column.columnDef as ColumnDefinition)
+                          .accessorKey === "actions" &&
                           row.getValue("checkoutStatus") && (
                             <>
                               <div className="flex items-center">
                                 <Button
                                   className="border rounded-md mr-2"
                                   onClick={() => {
-                                    openDetails(row.original.id);
+                                    openDetails((row.original as RowData).id);
                                   }}
                                 >
                                   Detalhes
@@ -453,7 +455,7 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
-      {/* TODO: creaet a component */}
+      {/* TODO: create a component */}
       {/* Modal form: checkout */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -503,7 +505,6 @@ export function DataTable<TData, TValue>({
                   <div>
                     <Label className="content-center">Entrada em</Label>
                     <DatePicker
-                      // onDateChange={handleDateChange(setHandedoverDate)}
                       defaultValue={checkInDate ? new Date(checkInDate) : null}
                       disabled={true}
                     />
@@ -677,23 +678,10 @@ export function DataTable<TData, TValue>({
                   </div>
                   <div></div>
 
-                  {/* <div>
-                    <Label className="content-center">
-                      Handed Over at (From User)
-                    </Label>
-                    <DatePicker
-                      onDateChange={handleDateChange(setHandedoverDate)}
-                      defaultValue={
-                        handedoverDate ? new Date(handedoverDate) : null
-                      }
-                      disabled={true}
-                    />
-                  </div> */}
-
                   <div>
                     <Label className="content-center">Outros periféricos</Label>
                     <Textarea
-                      defaultValue={dataById?.othersEquipment}
+                      defaultValue={dataById?.othersEquipment || ""}
                       {...register("othersEquipment")}
                       className="resize-none w-full h-40"
                       disabled={!chkBoxIsActive}
@@ -703,7 +691,7 @@ export function DataTable<TData, TValue>({
                   <div>
                     <Label className="content-center">Observações</Label>
                     <Textarea
-                      defaultValue={dataById?.remarks}
+                      defaultValue={dataById?.remarks || ""}
                       {...register("remarks")}
                       className="resize-none w-full h-40"
                       disabled={!chkBoxIsActive}
@@ -746,7 +734,7 @@ export function DataTable<TData, TValue>({
                   <div id="ticketNumber">
                     <Label className="content-center">Numero SATI</Label>
                     <Input
-                      disabled={!chkBoxIsActive}
+                      disabled
                       defaultValue={dataById?.ticketNumber}
                       {...register("ticketNumber")}
                     ></Input>
@@ -755,8 +743,7 @@ export function DataTable<TData, TValue>({
                   <div>
                     <Label className="content-center">Entrada em</Label>
                     <DatePicker
-                      // onDateChange={handleDateChange(setHandedoverDate)}
-                      defaultValue={dataById?.checkInDate}
+                      defaultValue={checkInDate ? new Date(checkInDate) : null}
                       disabled={true}
                     />
                   </div>
@@ -910,7 +897,11 @@ export function DataTable<TData, TValue>({
                       Entregue ao usuário
                     </Label>
                     <Select
-                      defaultValue={dataById?.WhoReceived_user_FK.toString()}
+                      defaultValue={
+                        dataById?.WhoReceived_user_FK
+                          ? dataById.WhoReceived_user_FK.toString()
+                          : ""
+                      }
                       onValueChange={setWhoReceived_user_FK}
                       required
                       disabled
@@ -929,7 +920,7 @@ export function DataTable<TData, TValue>({
                   <div>
                     <Label className="content-center">Outros periféricos</Label>
                     <Textarea
-                      defaultValue={dataById?.othersEquipment}
+                      defaultValue={dataById?.othersEquipment || ""}
                       {...register("othersEquipment")}
                       className="resize-none w-full h-40"
                       disabled
@@ -939,7 +930,7 @@ export function DataTable<TData, TValue>({
                   <div>
                     <Label className="content-center">Observações</Label>
                     <Textarea
-                      defaultValue={dataById?.remarks}
+                      defaultValue={dataById?.remarks || ""}
                       {...register("remarks")}
                       className="resize-none w-full h-40"
                       disabled

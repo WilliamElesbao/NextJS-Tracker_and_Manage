@@ -14,7 +14,7 @@ import { useState } from "react";
 
 type DatePickerProps = {
   defaultValue?: Date | null;
-  onDateChange: (newDate: string | null) => void;
+  onDateChange?: (newDate: string | null) => void;
   disabled?: boolean;
 };
 
@@ -27,9 +27,11 @@ export function DatePicker({
 
   const handleDateChange = (newDate: Date | null | undefined) => {
     setDate(newDate);
-    
+
     const newDateString = newDate ? newDate.toISOString() : null;
-    onDateChange(newDateString);
+    if (onDateChange) {
+      onDateChange(newDateString);
+    }
   };
 
   const dateFormat = "PPP";

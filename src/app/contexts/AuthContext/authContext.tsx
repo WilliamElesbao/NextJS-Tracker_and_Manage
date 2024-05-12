@@ -1,14 +1,15 @@
 "use client";
 
+import { ResponseTokenWithData } from "@/app/auth/components/types/responseTokenWithData";
+import { UserInfo } from "@/app/lib/types/tech-details";
 import { createContext, useEffect, useState } from "react";
-import { ResponseTokenWithData } from "../../(pages)/auth/components/types/responseTokenWithData";
 import { LoginData } from "../../api/auth/types/LoginData";
-import { UserInfo, decodeToken } from "../../utils/decodeToken";
+import { decodeToken } from "../../utils/decodeToken";
 import {
   createSessionCookie,
   deleteCookie,
   hasCookie,
-} from "./actions/actions";
+} from "./actions/cookie-actions";
 
 type AuthContextType = {
   user: UserInfo | null;

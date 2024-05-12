@@ -5,7 +5,6 @@ import { prisma } from "@/app/api/db";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const idFromSearchParams = searchParams.get("techID");
-  console.log(idFromSearchParams);
 
   if (!idFromSearchParams) {
     return;

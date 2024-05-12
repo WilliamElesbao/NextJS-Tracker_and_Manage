@@ -11,12 +11,23 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DividerHorizontalIcon } from "@radix-ui/react-icons";
+import clsx from "clsx";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const links = [
+  // TODO: add icons
+  { name: "Device Control", href: "/computer-management" },
+  // { name: "Empréstimo de itens", href: "#" },
+  // { name: "Rastreamento de aquisições", href: "#" },
+];
 
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <Sheet>
-      <SheetTrigger className="text-white inset-y-0 left-0 flex">
+      <SheetTrigger className="text-white inset-y-0 left-0 flex text-lg">
         <FontAwesomeIcon icon={faBars} />
       </SheetTrigger>
       <SheetContent
@@ -29,24 +40,24 @@ export function Sidebar() {
           </SheetTitle>
           <DividerHorizontalIcon className="flex flex-col w-full"></DividerHorizontalIcon>
         </SheetHeader>
-        <Link
-          href={"/"}
-          className="p-2 hover:bg-[#27272A] rounded-md ease-out duration-300"
-        >
-          Controle de máquinas
-        </Link>
-        {/* <Link
-          href={"#"}
-          className="p-2 hover:bg-[#27272A] rounded-md ease-out duration-300"
-        >
-          Empréstimo de itens
-        </Link>
-        <Link
-          href={"#"}
-          className="p-2 hover:bg-[#27272A] rounded-md ease-out duration-300"
-        >
-          Rastreamento de aquisições
-        </Link> */}
+        <>
+          {links.map((link) => {
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={clsx(
+                  "p-2 hover:bg-[#27272A] rounded-md ease-out duration-300",
+                  {
+                    "bg-[#27272A]": pathname === link.href,
+                  },
+                )}
+              >
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
+        </>
       </SheetContent>
     </Sheet>
   );

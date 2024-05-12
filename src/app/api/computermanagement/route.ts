@@ -7,7 +7,6 @@ import { format } from "date-fns";
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    console.log(data);
     if (!data || Object.keys(data).length === 0) {
       return new Response(JSON.stringify({ message: "Missing data!" }), {
         status: 400,
@@ -55,7 +54,6 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const idFromSearchParams = searchParams.get("id");
-  console.log(idFromSearchParams);
 
   if (!idFromSearchParams) {
     try {
@@ -68,12 +66,10 @@ export async function GET(req: Request) {
       const responseData = allRecords.map((record) => ({
         ...record,
         checkInDate: format(new Date(record.checkInDate), "dd/MM/yyyy"),
-        checkOutDate: format(new Date(record.checkOutDate), "dd/MM/yyyy"),
-        // createdAt: format(new Date(record.createdAt), "dd/MM/yyyy HH:mm:ss"),
+        checkOutDate: format(new Date(record.checkOutDate!!), "dd/MM/yyyy"), //dd/MM/yyyy HH:mm:ss
         createdAt: format(new Date(record.createdAt), "dd/MM/yyyy"),
         updatedAt: format(new Date(record.updatedAt), "dd/MM/yyyy"),
       }));
-      console.log(responseData);
 
       return Response.json(responseData, { status: 200 });
     } catch (error) {
@@ -103,7 +99,7 @@ export async function PUT(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id")?.toString();
   const { data } = await req.json();
-  console.log(data);
+
   try {
     const updatedRecord = await prisma.equipmentManagement_TB.update({
       where: { id: id },
@@ -121,21 +117,21 @@ export async function PUT(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id")?.toString();
-  if (!id) {
-    return Response.json({ message: "id cannot be empty" }, { status: 400 });
-  }
-  try {
-    await prisma.equipmentManagement_TB.delete({
-      where: { id: id },
-    });
-    return Response.json(
-      { record: `record [${id}] successfully deleted` },
-      { status: 200 },
-    ); // pode ser 204 - No content
-  } catch (error) {
-    return Response.json({ error: error }, { status: 404 });
-  }
-}
+// export async function DELETE(req: Request) {
+//   const { searchParams } = new URL(req.url);
+//   const id = searchParams.get("id")?.toString();
+//   if (!id) {
+//     return Response.json({ message: "id cannot be empty" }, { status: 400 });
+//   }
+//   try {
+//     await prisma.equipmentManagement_TB.delete({
+//       where: { id: id },
+//     });
+//     return Response.json(
+//       { record: `record [${id}] successfully deleted` },
+//       { status: 200 },
+//     ); // pode ser 204 - No content
+//   } catch (error) {
+//     return Response.json({ error: error }, { status: 404 });
+//   }
+// }

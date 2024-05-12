@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export async function createSessionCookie(token: string) {
   cookies().set("tracker_and_manage", token, { path: "/", maxAge: 60 * 60 });
-  redirect("/");
+  redirect("/computer-management");
 }
 
 export async function hasCookie() {

@@ -1,13 +1,8 @@
 "use server";
 
+import { UserInfo } from "@/app/lib/types/tech-details";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
-
-export interface UserInfo {
-  id: string | undefined;
-  username: string | undefined;
-  email: string | undefined;
-}
 
 export async function decodeToken(): Promise<UserInfo | null> {
   const token: string | undefined = cookies().get("tracker_and_manage")?.value;

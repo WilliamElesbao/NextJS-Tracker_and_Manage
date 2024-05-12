@@ -10,6 +10,12 @@ interface User {
   email: string;
 }
 
+export type Location = "Matriz" | "SP" | "BH";
+
+export type ComputerType = "NTB" | "DSK" | "WKS";
+
+export type ComputerStatus = "Available" | "Under Maintenance" | "Obsolete";
+
 export interface Records {
   // to check in
   id: string;
@@ -19,9 +25,9 @@ export interface Records {
   patrimonyID: string | number;
   serviceTag?: string | null;
   serialNumber?: string | null;
-  computerType: "NTB" | "DSK" | "WKS";
-  location: "Matriz" | "SP" | "BH";
-  computerStatus: "Available" | "Under Maintenance" | "Obsolete";
+  computerType: ComputerType;
+  location: Location;
+  computerStatus: ComputerStatus;
   broughtBy_user_FK: string | number;
   othersEquipment?: string | null;
   remarks?: string | null;

@@ -25,83 +25,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { Textarea } from "@/app/components/ui/textarea";
 import { AuthContext } from "@/app/contexts/AuthContext/authContext";
+import { createRecord } from "@/app/lib/actions";
+import { AddFormTypes } from "@/app/lib/types/add-form-types";
 import { cn } from "@/app/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { z } from "zod";
 import { formSchema } from "../../lib/addFormSchema";
-import { formDataObject } from "../data-table/addBtnOpenModal";
 
 type FormAddProps = {
-  onSubmitData: (data: formDataObject) => Promise<void>;
+  onCloseModal: () => void;
 };
 
-export default function FormAdd({ onSubmitData }: FormAddProps) {
+export default function CreateForm({ onCloseModal }: FormAddProps) {
   const { user } = useContext(AuthContext);
-  const [checkInDate, setCheckInDate] = useState<string | null>(null);
-  const [givenBackDate, setGivenBackDate] = useState<string | null>(null);
-  const [computerType, setComputerType] = useState("");
-  const [location, setLocation] = useState("");
-  const [computerStatus, setComputerStatus] = useState("");
-  const [employee, setEmployee] = useState("");
-  const [test, setTest] = useState("");
-
-  // TODO: isso poderia ser açoes
-
-  const handleDateChange = (
-    setDateFn: React.Dispatch<React.SetStateAction<string | null>>,
-  ) => {
-    return (newDate: string | null) => {
-      setDateFn(newDate);
-      console.log(newDate);
-      return Promise.resolve(newDate);
-    };
-  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    // defaultValues: {
-    //   hostname: "",
-    //   patrimonyID: 0,
-    //   ticketNumber: "",
-    //   computerType: "",
-    //   serviceTag: "",
-    //   serialNumber: "",
-    //   location: "",
-    //   computerStatus: "",
-    //   othersEquipment: "",
-    //   remarks: "",
-    //   broughtBy_user_FK: 0,
-    // checkInDate: "",
-    // givenbackDate: "",
-    // },
+    defaultValues: {
+      recivedBy_tech_FK: user?.id,
+      othersEquipment: "",
+      remarks: "",
+      hostname: "",
+      patrimonyID: 0,
+      ticketNumber: 0,
+      serialNumber: "",
+      serviceTag: "",
+    },
   });
 
   async function handleOnSubmit(formData: z.infer<typeof formSchema>) {
-    const data = {
-      ticketNumber: Number(formData.ticketNumber),
-      recivedBy_tech_FK: user?.id,
-      hostname: formData.hostname,
-      patrimonyID: Number(formData.patrimonyID),
-      serviceTag: formData.serviceTag === "" ? null : formData.serviceTag,
-      serialNumber: formData.serialNumber === "" ? null : formData.serialNumber,
-      location: location,
-      computerStatus: computerStatus,
-      broughtBy_user_FK: Number(employee),
-      computerType: computerType,
-      othersEquipment: formData.othersEquipment,
-      remarks: formData.remarks,
-      checkInDate: formData.checkInDate,
+    const data: AddFormTypes = {
+      ...formData,
+      serviceTag:
+        formData.serviceTag === "" || formData.serviceTag === undefined
+          ? null
+          : formData.serviceTag,
+      serialNumber:
+        formData.serialNumber === "" || formData.serialNumber === undefined
+          ? null
+          : formData.serialNumber,
+      othersEquipment: formData.othersEquipment ?? "",
+      remarks: formData.remarks ?? "",
     };
-    console.log(formData);
-    console.log(data);
 
-    onSubmitData(data);
+    try {
+      // TODO: Tratar erro ao salvar quando ocorrer conflito com ST, ST, HOSTNAME, PATRIMONIO
+      if (await createRecord(data)) {
+        toast.success("Registro criado com sucesso!");
+      } else {
+        toast.error(`Erro ao salvar`);
+        throw new Error("Failed to add computer");
+      }
+      onCloseModal();
+    } catch (error) {
+      console.error(error);
+    }
   }
+
+  const closeModal = () => {
+    onCloseModal();
+  };
 
   return (
     <>
@@ -118,7 +108,7 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Número SATI</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Número SATI" {...field} />
+                    <Input type="number" placeholder="Número SATI" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,12 +180,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Entregue pelo usuário</FormLabel>
                   <FormControl>
-                    <Select onValueChange={setEmployee} required>
+                    <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder="Select an employee"
-                          {...field}
-                        />
+                        <SelectValue placeholder="Select an employee" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -272,9 +259,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Tipo / Modelo</FormLabel>
                   <FormControl>
-                    <Select onValueChange={setComputerType} required>
+                    <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Type..." {...field} />
+                        <SelectValue placeholder="Tipo / Modelo..." />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="NTB">Notebook</SelectItem>
@@ -295,12 +282,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Localização</FormLabel>
                   <FormControl>
-                    <Select onValueChange={setLocation} required>
+                    <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder="Select a location"
-                          {...field}
-                        />
+                        <SelectValue placeholder="Select a location" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -324,9 +308,9 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Status da máquina</FormLabel>
                   <FormControl>
-                    <Select onValueChange={setComputerStatus} required>
+                    <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a status" {...field} />
+                        <SelectValue placeholder="Select a status" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -354,9 +338,8 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Outros periféricos</FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       placeholder="Ex.:  Mouse, Teclado, ..."
-                      type="text"
                       {...field}
                     />
                   </FormControl>
@@ -372,19 +355,24 @@ export default function FormAdd({ onSubmitData }: FormAddProps) {
                 <FormItem>
                   <FormLabel>Observações:</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Ex.: Any comments..."
-                      type="text"
-                      {...field}
-                    />
+                    <Textarea placeholder="Ex.: Any comments..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <div className="flex flex-col">
-            <Button type="submit">Add</Button>
+          <div className="flex relative">
+            <Button type="submit" className="absolute right-0">
+              Salvar
+            </Button>
+            <Button
+              onClick={closeModal}
+              variant={"destructive"}
+              className="absolute right-20"
+            >
+              Fechar
+            </Button>
           </div>
         </form>
       </Form>
