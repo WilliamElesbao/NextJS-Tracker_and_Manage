@@ -1,6 +1,6 @@
-import { NavHeader } from "@/app/ui/navHeader";
-import { AuthProvider } from "../contexts/AuthContext/authContext";
-import { Sidebar } from "../ui/sidebar";
+import { NavHeader } from "@/ui/navHeader";
+import { AuthProvider } from "@/contexts/AuthContext/authContext";
+import { Sidebar } from "@/ui/sidebar";
 import { ToastContainer } from "react-toastify";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

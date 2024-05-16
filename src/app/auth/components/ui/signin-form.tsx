@@ -1,13 +1,13 @@
 "use client";
 
-import { LoginData } from "@/app/api/auth/types/LoginData";
-import { Button } from "@/app/components/ui/button";
-import { AuthContext } from "@/app/contexts/AuthContext/authContext";
+import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/contexts/AuthContext/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "../lib/signInFormSchema";
 import { AlertDestructive } from "./alert";
+import { LoginData } from "@/lib/types/LoginData";
 
 export function SignInForm() {
   const {

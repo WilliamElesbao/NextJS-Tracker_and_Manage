@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/app/contexts/AuthContext/authContext";
+import { AuthProvider } from "@/contexts/AuthContext/authContext";
 import Image from "next/image";
 import { SignInForm } from "./components/ui/signin-form";
 

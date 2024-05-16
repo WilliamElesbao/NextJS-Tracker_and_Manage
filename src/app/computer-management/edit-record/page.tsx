@@ -1,29 +1,35 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/components/ui/select";
-import { Textarea } from "@/app/components/ui/textarea";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { updateRecord } from "@/lib/actions";
+import {
+  computerTypes,
+  defaultStatus,
+  locations,
+} from "@/lib/types/RecordsTypes";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import action from "../../lib/action-revalidate-tag";
-import { Records } from "../../lib/types/RecordsTypes";
-import { DatePicker } from "../../ui/computer-management/date-picker";
+import { Records } from "@/lib/types/RecordsTypes";
+import { DatePicker } from "@/ui/computer-management/date-picker";
+import { fetchRecordById } from "@/lib/data";
 
 export default function EditRecord() {
-  const idFromSearchParams = useSearchParams().get("id");
-  const [record, setRecord] = useState<Records>();
+  const idFromSearchParams = useSearchParams().get("id")!!;
+  const [record, setRecord] = useState<any>();
   const [computerType, setComputerType] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [computerStatus, setComputerStatus] = useState<string>("");
@@ -31,8 +37,6 @@ export default function EditRecord() {
   const [handedoverDate, setHandedoverDate] = useState<any>(null);
   const { handleSubmit, register } = useForm();
   const router = useRouter();
-
-  // TODO: isso poderia ser açoes
 
   const handleDateChange = (
     setDateFn: React.Dispatch<React.SetStateAction<string | null>>,
@@ -45,18 +49,16 @@ export default function EditRecord() {
 
   useEffect(() => {
     const recordForEdit = async () => {
-      const response = await fetch(
-        `http://localhost:3000/api/computermanagement/?id=${idFromSearchParams}`,
-      );
-
-      if (response.ok) {
-        const reqDataFromAPI: Records = await response.json();
+      try {
+        const reqDataFromAPI = await fetchRecordById(idFromSearchParams);
         setRecord(reqDataFromAPI);
-        setComputerType(reqDataFromAPI.computerType);
-        setLocation(reqDataFromAPI.location);
-        setComputerStatus(reqDataFromAPI.computerStatus);
-        setBroughtBy_user(reqDataFromAPI.broughtBy_user_FK);
-        setHandedoverDate(reqDataFromAPI.checkInDate);
+        setComputerType(reqDataFromAPI!.computerType);
+        setLocation(reqDataFromAPI!.location);
+        setComputerStatus(reqDataFromAPI!.computerStatus);
+        setBroughtBy_user(reqDataFromAPI!.broughtBy_user_FK);
+        setHandedoverDate(reqDataFromAPI!.checkInDate);
+      } catch (error) {
+        console.error("Erro ao buscar o registro pelo id: ", error);
       }
     };
 
@@ -85,28 +87,16 @@ export default function EditRecord() {
     };
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/computermanagement/?id=${idFromSearchParams}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ data }),
-        },
-      );
-
-      if (response.ok) {
-        toast.info(`Edited Computer: ${dataFromForm.hostname}`);
-        action();
+      // TODO: Tratar erro ao salvar quando ocorrer conflito com ST, ST, HOSTNAME, PATRIMONIO
+      if (await updateRecord(idFromSearchParams, data)) {
+        toast.success("Registro atualizado!");
         router.back();
       } else {
-        const result = await response.json();
-        console.error("Erro ao editar os dados");
-        toast.error(`Erro ao editar os dados ${result.error.meta.target}`);
+        toast.error(`Erro ao atualizar`);
+        throw new Error("Erro ao atualizar");
       }
     } catch (error) {
-      console.error("Erro:", error);
+      console.error(error);
     }
   };
 
@@ -172,8 +162,8 @@ export default function EditRecord() {
                       <SelectValue placeholder="Select an employee" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Fulano</SelectItem>
-                      <SelectItem value="2">Beutrano</SelectItem>
+                      <SelectItem value="1">William Elesbão</SelectItem>
+                      <SelectItem value="2">willtubetech</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -229,9 +219,11 @@ export default function EditRecord() {
                       <SelectValue placeholder="Select a type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="NTB">Notebook</SelectItem>
-                      <SelectItem value="DSK">Desktop</SelectItem>
-                      <SelectItem value="WKS">Workstation</SelectItem>
+                      {Object.entries(computerTypes).map(([key, value]) => (
+                        <SelectItem key={key} value={key}>
+                          {value}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -247,9 +239,11 @@ export default function EditRecord() {
                       <SelectValue placeholder="Select a location" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Matriz">Matriz</SelectItem>
-                      <SelectItem value="SP">São Paulo</SelectItem>
-                      <SelectItem value="BH">Belo Horizonte</SelectItem>
+                      {locations.map((location) => (
+                        <SelectItem key={location} value={location}>
+                          {location}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -265,13 +259,11 @@ export default function EditRecord() {
                       <SelectValue placeholder="Select a status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Under Maintenance">
-                        Under Maintenance
-                      </SelectItem>
-                      <SelectItem value="Available">
-                        Available for use
-                      </SelectItem>
-                      <SelectItem value="Obsolete">Obsolete</SelectItem>
+                      {Object.entries(defaultStatus).map(([key, value]) => (
+                        <SelectItem key={key} value={key}>
+                          {value}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -301,6 +293,7 @@ export default function EditRecord() {
           </>
         ) : (
           ``
+          // TODO: Skeleton
           // <div>Loading...</div>
         )}
       </main>
