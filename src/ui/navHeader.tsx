@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AuthContext } from "@/contexts/AuthContext/authContext";
+import { LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
@@ -18,7 +19,7 @@ export function NavHeader() {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <nav className={`bg-[#ad680e] shadow-md shadow-black/20`}>
+    <nav className={`bg-primary shadow-md shadow-black/20`}>
       <div className="mx-auto px-2 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="flex flex-1 items-center justify-center">
@@ -45,19 +46,19 @@ export function NavHeader() {
                   <DropdownMenuTrigger className="absolute w-8 h-8 right-3 top-[25%] text-white border border-white rounded-full  hover:bg-[#27272A] ease-out duration-200">
                     {user?.username?.charAt(0).toUpperCase()}
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-black">
-                    <DropdownMenuLabel className="text-white opacity-60">
+                  <DropdownMenuContent className="">
+                    <DropdownMenuLabel className="opacity-60">
                       {user?.email}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       {/* TODO: Logout usando server action */}
                       <Button
-                        className="min-w-full"
-                        variant={"secondary"}
+                        className="flex justify-between min-w-full"
                         onClick={logout}
                       >
-                        Sign out
+                        <span>Sign out</span>
+                        <LogOut className="w-4 h-4" />
                       </Button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

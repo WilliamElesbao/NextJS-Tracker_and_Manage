@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeToggle } from "@/components/theme-switcher";
 import {
   Sheet,
   SheetContent,
@@ -18,8 +19,8 @@ import { usePathname } from "next/navigation";
 const links = [
   // TODO: add icons
   { name: "Device Control", href: "/computer-management" },
-  // { name: "Empréstimo de itens", href: "#" },
-  // { name: "Rastreamento de aquisições", href: "#" },
+  { name: "Empréstimo de itens", href: "#" },
+  { name: "Rastreamento de aquisições", href: "#" },
 ];
 
 export function Sidebar() {
@@ -27,29 +28,29 @@ export function Sidebar() {
 
   return (
     <Sheet>
-      <SheetTrigger className="text-white inset-y-0 left-0 flex text-lg">
-        <FontAwesomeIcon icon={faBars} />
+      <SheetTrigger className="inset-y-0 left-0 flex text-lg">
+        <FontAwesomeIcon icon={faBars} className="text-accent" />
       </SheetTrigger>
       <SheetContent
         side={"left"}
-        className="flex flex-col bg-black text-white border-0"
+        className="flex flex-col bg-background border-0"
       >
         <SheetHeader className="">
-          <SheetTitle className="flex justify-center text-white">
+          <SheetTitle className="flex justify-center">
             Tracker & Manage
           </SheetTitle>
           <DividerHorizontalIcon className="flex flex-col w-full"></DividerHorizontalIcon>
         </SheetHeader>
-        <>
+        <div className="flex flex-col relative h-screen">
           {links.map((link) => {
             return (
               <Link
                 key={link.name}
                 href={link.href}
                 className={clsx(
-                  "p-2 hover:bg-[#27272A] rounded-md ease-out duration-300",
+                  "p-2 hover:opacity-80 rounded-md ease-out duration-300",
                   {
-                    "bg-[#27272A]": pathname === link.href,
+                    "bg-primary border text-foreground": pathname === link.href,
                   },
                 )}
               >
@@ -57,7 +58,10 @@ export function Sidebar() {
               </Link>
             );
           })}
-        </>
+          <div className="absolute bottom-0 right-0">
+            <ModeToggle />
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/api/db";
+import { prisma } from "@/app/api/db";
 import {
   ComputerStatus,
   ComputerType,
@@ -27,6 +27,8 @@ export async function fetchAllRecords() {
     createdAt: format(new Date(record.createdAt), "dd/MM/yyyy"),
     updatedAt: format(new Date(record.updatedAt), "dd/MM/yyyy"),
   }));
+
+  prisma.$disconnect();
 
   return formattedData;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,6 +19,9 @@ import {
 } from "@/components/ui/table";
 import { fetchRecordById, fetchTechById } from "@/lib/data";
 import { Records } from "@/lib/types/RecordsTypes";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CheckCircledIcon, ExitIcon, ReaderIcon } from "@radix-ui/react-icons";
 import {
   ColumnDefBase,
   ColumnFiltersState,
@@ -38,6 +40,7 @@ import { DataTableProps } from "../../lib/types/DataTableProps";
 import { AddBtn } from "./add-button";
 import { CheckOutForm } from "./checkout-form";
 import { DetailsForm } from "./details-form";
+import clsx from "clsx";
 
 interface RowData {
   checkOutDate?: string;
@@ -135,15 +138,24 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
 
-        <Label className="border rounded-md cursor-pointer flex space-x-3 items-center p-3">
+        <Label
+          className={clsx(
+            "border rounded-md cursor-pointer flex gap-2 items-center p-3 hover:bg-primary duration-300",
+            {
+              "bg-primary": showCheckOutTrue,
+            },
+          )}
+        >
           <input
             type="checkbox"
             checked={showCheckOutTrue}
             onChange={() => {
               setShowCheckOutTrue(!showCheckOutTrue);
             }}
+            className="sr-only"
           />
-          <span>Check-outs realizados</span>
+          <FontAwesomeIcon icon={faFilter} />
+          <span className="hidden md:block">Check-outs realizados</span>
         </Label>
 
         <div className="flex gap-2">
@@ -177,13 +189,17 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border w-full">
+      <div className="relative p-1 rounded-lg bg-gradient-to-b from-foreground from-10% via-foreground via-30% to-background to-80%">
+        <div className="absolute inset-0 rounded-lg m-[0.04rem] bg-background"></div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="text-center">
+                  <TableHead
+                    key={header.id}
+                    className="text-center text-accent-foreground"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -212,24 +228,23 @@ export function DataTable<TData, TValue>({
                           // Verifica se checkoutStatus é verdadeiro
                           row.getValue("checkoutStatus") ? (
                             <>
-                              <Badge className="w-full flex flex-col items-center">
-                                <span>Check-out em:</span>
+                              <div className="w-auto flex justify-center items-center gap-3">
+                                <CheckCircledIcon className="text-green-600" />
                                 <span>
                                   {(row.original as RowData).checkOutDate}
                                 </span>
-                              </Badge>
+                              </div>
                             </>
                           ) : (
                             <Button
-                              className="border rounded-md w-full h-8"
+                              className="border rounded-md flex items-center gap-2 w-full h-8 bg-background text-accent-foreground hover:bg-primary hover:opacity-100 duration-200"
                               onClick={() =>
                                 handleCheckoutClick(
                                   (row.original as RowData).id,
                                 )
                               }
-                              variant={"secondary"}
                             >
-                              Realizar Check-out
+                              Realizar Check-out <ExitIcon />
                             </Button>
                           )
                         ) : (
@@ -249,23 +264,23 @@ export function DataTable<TData, TValue>({
                           .accessorKey === "actions" &&
                           row.getValue("checkoutStatus") && (
                             <>
-                              <div className="flex items-center">
+                              <div className="flex justify-center gap-2 items-center">
                                 <Button
-                                  className="border rounded-md mr-2"
+                                  className="border border-primary rounded-full bg-transparent text-destructive flex justify-center items-center w-6 h-6 p-1 opacity-80 hover:bg-transparent hover:opacity-100 duration-200"
                                   onClick={() => {
                                     openDetails((row.original as RowData).id);
                                   }}
                                 >
-                                  Detalhes
+                                  <ReaderIcon className="w-4 h-4" />
                                 </Button>
                                 {/* <Button
-                                  className="border rounded-md"
+                                  className="border border-primary rounded-full text-destructive flex justify-center items-center w-6 h-6 p-1 opacity-50 hover:opacity-100 duration-200"
                                   onClick={() => {
                                     // Adicione a lógica para o segundo botão extra aqui
                                     // Ex: handleSecondExtraButtonClick(row.original.id)
                                   }}
                                 >
-                                  Enviar e-mail
+                                  <EnvelopeClosedIcon />
                                 </Button> */}
                               </div>
                             </>

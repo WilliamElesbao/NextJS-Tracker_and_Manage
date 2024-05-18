@@ -1,302 +1,409 @@
-import { prisma } from "@/api/db";
+"use server";
+
+import { prisma } from "@/app/api/db";
 import { format } from "date-fns";
 import { createTransport } from "nodemailer";
-
-// const nodemailer = require("nodemailer");
-
-interface FormValues {}
-
-// Gmail
-
-// const transporter = nodemailer.createTransport({
-//   service:`gmail`,
-//   host: "smtp.gmail.com",
-//   port: 587,
-//   secure: false, // Use `true` for port 465, `false` for all other ports
-//   auth: {
-//     user: "william.elesbao.2000@gmail.com",
-//     pass: "bkgu khpz uwss cjhe",
-//   },
-// });
+import { fetchTechById } from "./data";
 
 const transporter = createTransport({
-  // service: `gmail`
-  host: "smtp-mail.outlook.com", // smtp.gmail.com
+  host: process.env.HOST,
   port: 587,
-  secure: false, // Use `true` for port 465, `false`
+  secure: false,
   auth: {
-    user: "william.elesbao.2000@outlook.com", // william.elesbao.2000@gmail.com
-    pass: "xsdodkdrnzjcoujx", // bkgu khpz uwss cjhe
+    user: process.env.EMAIL,
+    pass: process.env.APP_PASSWORD,
   },
 });
 
-export const sendCheckInMail = async (formData: any) => {
-  console.log(formData);
+type AttributesTemplateMail = {
+  title: string;
+  subtitle: string;
+  hostname: string;
+  date: string;
+  ticketNumber: string;
+  checkInDate: string;
+  patrimonyID: string;
+  serviceTag?: any;
+  serialNumber?: any;
+  computerType: string;
+  location: string;
+  broughtBy: string;
+  broughtBy_email: string;
+  recivedBy: string;
+  recivedBy_email: string;
+  othersEquipment: string;
+  remarks: string;
+};
 
-  const recordByHostname: any = await prisma.equipmentManagement_TB.findUnique({
-    where: {
-      hostname: formData.hostname,
-    },
+function generateEmailTemplate({
+  title,
+  subtitle,
+  hostname,
+  date,
+  ticketNumber,
+  checkInDate,
+  patrimonyID,
+  serviceTag,
+  serialNumber,
+  computerType,
+  location,
+  broughtBy,
+  broughtBy_email,
+  recivedBy,
+  recivedBy_email,
+  othersEquipment,
+  remarks,
+}: AttributesTemplateMail) {
+  return `
+  <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${title}</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        color: #fff;
+      }
+
+      body {
+        color: #fff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #fff;
+      }
+      .details {
+        text-align: left;
+        margin-top: 20px;
+      }
+      .details p {
+        margin: 10px 0;
+        color: #fff;
+      }
+      .footer {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+      .card {
+        background-color: #000;
+        background: linear-gradient(to bottom, rgb(0, 0, 0), rgb(34, 34, 34));
+        border-radius: 1rem;
+        display: flex;
+        position: relative;
+        width: 20rem;
+        height: auto;
+        padding: 1rem;
+        margin: 0 auto;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 1rem 1rem 0 0;
+        padding: 0.15rem;
+        background: linear-gradient(to bottom, white, black);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+      }
+
+      .card > .logo {
+        background-color: rgb(0, 0, 0);
+        border: rgb(65, 65, 65) 1px solid;
+        position: absolute;
+        z-index: 10;
+        top: -2.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 5rem;
+        height: 5rem;
+        border-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2.5rem;
+        color: rgb(70, 70, 70);
+      }
+      .content > span {
+        font-size: 0.85rem;
+        color: rgb(124, 123, 123);
+      }
+      .content > .hostname {
+        font-size: 1rem;
+        color: white;
+      }
+      .card .content {
+        display: inline-block;
+        gap: 0.7rem;
+        position: relative;
+        border-radius: 1rem 1rem 0 0;
+        padding-top: 2rem;
+      }
+
+      .data-grid {
+        display: inline-block;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .labels {
+        display: block;
+        font-weight: bold;
+        font-size: 0.85rem;
+        text-align: start;
+        margin-top: 2rem;
+      }
+      .values {
+        display: block;
+        flex-direction: column;
+        font-size: 0.85rem;
+        text-align: start;
+        margin-top: 2rem;
+      }
+      .date {
+        display: block;
+        gap: 1rem;
+        position: absolute;
+        bottom: 0.25rem;
+      }
+      .date > label {
+        font-weight: bold;
+        font-size: 0.85rem;
+      }
+      .date > span {
+        font-size: 0.85rem;
+      }
+      label, span{
+        margin-bottom: 1rem ;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Quem entregou, quando entregou o que entregou e quem recebeu -->
+    <div
+      style="
+        text-align: start;
+        background-color: #000;
+        padding: 1.5rem;
+        width: 500px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 1);
+      "
+    >
+      <p style="font-size: 1.25rem">${title}</p>
+      <p style="font-size: 1.25rem">${subtitle}</p>
+      <p style="font-size: 1.25rem">Máquina - ${hostname}</p>
+
+      <div style="margin-top: 3rem; display: flex; width: 100%">
+        <!-- info sobre a entrega -->
+        <div class="card">
+          <!-- <div class="logo">TM</div> -->
+          <br />
+          <div class="content">
+            <span>Dados da entrega</span>
+            <br />
+            <span class="hostname">${hostname}</span>
+            <br />
+            <!-- <div class="line"></div> -->
+            <div class="data-grid">
+              <div class="labels">
+                <label>SATI:</label>
+                <span>${ticketNumber}</span>
+                <br />
+
+                <label>Entregue por:</label>
+                <span>${broughtBy}</span>
+                <br />
+
+                <label>E-mail:</label>
+                <span>${broughtBy_email}</span>
+                <br />
+
+                <label>Recebido por:</label>
+                <span>${recivedBy}</span>
+                <br />
+                
+                <label>E-mail:</label>
+                <span>${recivedBy_email}</span>
+                <br />
+
+                <label>Hostname:</label>
+                <span>${hostname}</span>
+
+                <br />
+                <label>Patrimônio:</label>
+                <span>${patrimonyID}</span>
+                <br />
+
+                ${
+                  serviceTag
+                    ? `
+                  <label>Service tag:</label>
+                  <span>${serviceTag}</span>
+                  <br />
+                `
+                    : ""
+                }
+
+                ${
+                  serialNumber
+                    ? `<label>Serial number:</label> <span>${serialNumber}</span> <br />`
+                    : ""
+                }
+
+                <label>Tipo:</label>
+                <span>${computerType}</span>
+
+                <br />
+                <label>Localização:</label>
+                <span>${location}</span>
+
+                <br />
+                ${
+                  othersEquipment
+                    ? `
+                <label>Equipamentos:</label>
+                <span>${othersEquipment}</span>
+
+                <br />`
+                    : ""
+                }
+                ${
+                  remarks
+                    ? `
+                <label>Observações:</label>
+                <span>${remarks}</span>
+
+                <br />
+                `
+                    : ""
+                }
+                
+              </div>
+            </div>
+            <div class="date">
+              <label>Entregue à TI em:</label>
+              <span>${checkInDate}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="footer">Tracker & Manage - ${new Date().getFullYear()}</p>
+    </div>
+  </body>
+</html>
+  `;
+}
+
+export const sendCheckInMail = async (formData: any) => {
+  const recordByHostname = await prisma.equipmentManagement_TB.findUnique({
+    where: { hostname: formData.hostname },
     include: {
-      technician: {
-        select: {
-          username: true,
-          email: true,
-        },
-      },
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
+      technician: { select: { username: true, email: true } },
+      user: { select: { name: true, email: true } },
     },
   });
 
-  console.log(recordByHostname);
+  const emailTemplate = generateEmailTemplate({
+    title: "Tracker & Manage - Check-in",
+    subtitle: "Check-in - TI",
+    hostname: recordByHostname!.hostname,
+    date: format(new Date(recordByHostname!.createdAt), "dd/MM/yyyy"),
+    ticketNumber: String(recordByHostname!.ticketNumber),
+    checkInDate: format(new Date(recordByHostname!.checkInDate), "dd/MM/yyyy"),
+    patrimonyID: String(recordByHostname!.patrimonyID),
+    serviceTag:
+      recordByHostname?.serviceTag !== "null"
+        ? recordByHostname?.serviceTag
+        : null,
+    serialNumber: recordByHostname?.serialNumber || null,
+    computerType: recordByHostname!.computerType,
+    location: recordByHostname!.location,
+    broughtBy: recordByHostname!.user.name,
+    broughtBy_email: recordByHostname!.user.email,
+    recivedBy: recordByHostname!.technician.username,
+    recivedBy_email: recordByHostname!.technician.email,
+    othersEquipment: recordByHostname!.othersEquipment || "",
+    remarks: recordByHostname!.remarks || "",
+  });
+
+  console.log(recordByHostname?.serviceTag);
+  console.log(recordByHostname?.serialNumber);
 
   const info = await transporter.sendMail({
-    from: {
-      name: `Tracker & Manage`,
-      address: "william.elesbao.2000@outlook.com",
-    },
-    to: [recordByHostname?.technician.email], // list of receivers
+    from: { name: `Tracker & Manage`, address: process.env.EMAIL! },
+    to: [recordByHostname!.technician.email],
+    cc: [recordByHostname!.user.email],
     subject: `Tracker & Manage - Check-in - ${recordByHostname?.hostname}`,
-    cc: [recordByHostname?.user.email],
-    // text: `
-    // Entregue os itens:
-    // Registro criado em: ${recordByHostname?.createdAt}\n
-    // Data de entrada do computador: ${recordByHostname?.checkInDate}\n
-    // Hostname da máquina: ${recordByHostname?.hostname}\n
-    // Patrimônio da máquina: ${recordByHostname?.patrimonyID}\n
-    // Usuário que entregou: ${recordByHostname?.user.name}\n
-    // Técnico que recebeu: ${recordByHostname?.technician.username}\n
-
-    // Itens entregues: ${recordByHostname?.othersEquipment}\n
-    // Observações: ${recordByHostname?.remarks}\n
-    // `,
-    html: `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tracker & Manage - Check-in</title>
-        <style>
-          body {
-            background-color: #000;
-            color: #fff;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-          }
-    
-          .container {
-            background-color: #000;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-          }
-    
-          h1,h2,h3 {
-            color: #fff;
-          }
-    
-          .details {
-            text-align: left;
-            margin-top: 20px;
-          }
-    
-          .details p {
-            margin: 10px 0;
-            color: #fff;
-          }
-    
-          .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            opacity: 0.7;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Tracker & Manage</h1>
-          <h2>Check-in - TI</h2>
-          <h3>Entregue a máquina - ${recordByHostname?.hostname}</h3>
-          <div class="details">
-            
-            <p><b>Registro criado em:</b> ${format(
-              new Date(recordByHostname.createdAt),
-              "dd/MM/yyyy",
-            )}</p>
-            <p><b>Número do SATI:</b> ${recordByHostname?.ticketNumber}</p>
-            <p>
-              <b>Data de entrada do computador:</b> ${format(
-                new Date(recordByHostname.checkInDate),
-                "dd/MM/yyyy",
-              )}
-            </p>
-            <p><b>Hostname da máquina:</b> ${recordByHostname?.hostname}</p>
-            <p><b>Patrimônio da máquina:</b> ${
-              recordByHostname?.patrimonyID
-            }</p>
-            <p><b>Usuário que entregou:</b> ${recordByHostname?.user.name}</p>
-            <p>
-              <b>Técnico que recebeu:</b> ${
-                recordByHostname?.technician.username
-              }
-            </p>
-            <p><b>Itens entregues:</b> ${recordByHostname?.othersEquipment}</p>
-            <p><b>Observações:</b> ${recordByHostname?.remarks}</p>
-          </div>
-          <p class="footer">Tracker & Manage - ${new Date().getFullYear()}</p>
-        </div>
-      </body>
-    </html>
-    
-
-      `,
+    html: emailTemplate,
   });
 
-  console.log("Message sent: %s", info.messageId);
+  console.log("Check-in: Message sent: %s", info.messageId!);
 };
 
 export const sendCheckOutMail = async (id: any) => {
-  console.log(id);
-
-  const recordByHostname: any = await prisma.equipmentManagement_TB.findUnique({
-    where: {
-      id: id,
-    },
+  const recordByHostname = await prisma.equipmentManagement_TB.findUnique({
+    where: { id },
     include: {
-      technician: {
-        select: {
-          username: true,
-          email: true,
-        },
-      },
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
+      technician: { select: { username: true, email: true } },
+      user: { select: { name: true, email: true } },
     },
+  });
+
+  const givenBackByTechId = await fetchTechById(
+    recordByHostname?.givenBackBy_tech_FK!,
+  );
+  console.log(givenBackByTechId);
+
+  const formData = {
+    ...recordByHostname,
+    givenBackBy_tech_FK: givenBackByTechId,
+  };
+
+  const emailTemplate = generateEmailTemplate({
+    title: "Tracker & Manage - Check-Out",
+    subtitle: "Check-Out - TI",
+    hostname: recordByHostname!.hostname,
+    date: format(new Date(recordByHostname!.createdAt), "dd/MM/yyyy"),
+    ticketNumber: String(recordByHostname!.ticketNumber),
+    checkInDate: format(new Date(recordByHostname!.checkInDate), "dd/MM/yyyy"),
+    patrimonyID: String(recordByHostname!.patrimonyID),
+    serviceTag: recordByHostname?.serviceTag || null,
+    serialNumber: recordByHostname?.serialNumber || null,
+    computerType: recordByHostname!.computerType,
+    location: recordByHostname!.location,
+    broughtBy: formData!.givenBackBy_tech_FK!.username!,
+    broughtBy_email: formData!.givenBackBy_tech_FK!.email,
+    recivedBy: recordByHostname!.user.name,
+    recivedBy_email: recordByHostname!.user.email,
+    othersEquipment: recordByHostname!.othersEquipment || "",
+    remarks: recordByHostname!.remarks || "",
   });
 
   console.log(recordByHostname);
 
   const info = await transporter.sendMail({
-    from: {
-      name: `Tracker & Manage`,
-      address: "william.elesbao.2000@outlook.com",
-    },
-    to: [recordByHostname?.technician.email], // list of receivers
+    from: { name: `Tracker & Manage`, address: process.env.EMAIL! },
+    to: [recordByHostname!.technician.email],
+    cc: [recordByHostname!.user.email],
     subject: `Tracker & Manage - Check-out - ${recordByHostname?.hostname}`,
-    cc: [recordByHostname?.user.email],
-    html: `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tracker & Manage - Check-out</title>
-        <style>
-          body {
-            background-color: #000;
-            color: #fff;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-          }
-    
-          .container {
-            background-color: #000;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-          }
-    
-          h1,h2,h3 {
-            color: #fff;
-          }
-    
-          .details {
-            text-align: left;
-            margin-top: 20px;
-          }
-    
-          .details p {
-            margin: 10px 0;
-            color: #fff;
-          }
-    
-          .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            opacity: 0.7;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Tracker & Manage</h1>
-          <h2>Check-Out - TI</h2>
-          <h3>Entregue a máquina - ${recordByHostname?.hostname} ao usuário ${
-      recordByHostname.user.name
-    }</h3>
-          <div class="details">
-            
-            <p><b>Registro criado em:</b> ${format(
-              new Date(recordByHostname.createdAt),
-              "dd/MM/yyyy",
-            )}</p>
-            <p><b>Número do SATI:</b> ${recordByHostname?.ticketNumber}</p>
-            <p>
-              <b>Data de entrada do computador:</b> ${format(
-                new Date(recordByHostname.checkInDate),
-                "dd/MM/yyyy",
-              )}
-            </p>
-            <p><b>Hostname da máquina:</b> ${recordByHostname?.hostname}</p>
-            <p><b>Patrimônio da máquina:</b> ${
-              recordByHostname?.patrimonyID
-            }</p>
-            <p><b>Usuário que entregou:</b> ${recordByHostname?.user.name}</p>
-            <p>
-              <b>Técnico que recebeu:</b> ${
-                recordByHostname?.technician.username
-              }
-            </p>
-            <p><b>Itens entregues:</b> ${recordByHostname?.othersEquipment}</p>
-            <p><b>Observações:</b> ${recordByHostname?.remarks}</p>
-          </div>
-          <p class="footer">Tracker & Manage - ${new Date().getFullYear()}</p>
-        </div>
-      </body>
-    </html>
-    
-
-      `,
+    html: emailTemplate,
   });
 
-  console.log("Message sent: %s", info.messageId);
+  console.log("Check-out: Message sent: %s", info.messageId);
 };
-
-// sendEmail().catch(console.error);
-// "willtube.tech@gmail.com",
-// "william.elesbao.2000@gmail.com",
-// "TM-NTB-011474, Data entrega: 14.05.2024, Tecnico que recebeu: willtubetech",

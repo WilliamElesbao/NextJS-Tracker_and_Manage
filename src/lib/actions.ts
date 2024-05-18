@@ -1,9 +1,9 @@
 "use server";
 
-import { prisma } from "@/api/db";
+import { prisma } from "@/app/api/db";
+import { sendCheckInMail } from "@/lib/mailer";
 import { AddFormTypes } from "@/lib/types/add-form-types";
 import { revalidatePath } from "next/cache";
-import { sendCheckInMail } from "./mailer";
 
 export async function createRecord(formData: AddFormTypes) {
   try {
@@ -45,7 +45,3 @@ export async function deleteRecord(id: string) {
     return false;
   }
 }
-
-// TODO:
-// sendCheckInMail
-// sendCheckOutMail

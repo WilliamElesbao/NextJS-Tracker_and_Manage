@@ -112,6 +112,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número SATI</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Input type="number" placeholder="Número SATI" {...field} />
                   </FormControl>
@@ -126,6 +127,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem className="">
                   <FormLabel>Entrada em</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -184,6 +186,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Entregue pelo usuário</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
@@ -209,6 +212,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Hostname</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Input placeholder="Hostname" {...field} />
                   </FormControl>
@@ -222,6 +226,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Patrimônio</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Input type="number" placeholder="Patrimony" {...field} />
                   </FormControl>
@@ -263,6 +268,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo / Modelo</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
@@ -288,6 +294,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Localização</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
@@ -316,6 +323,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status da máquina</FormLabel>
+                  <span className="ml-2 text-destructive">*</span>
                   <FormControl>
                     <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
@@ -337,6 +345,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
                 </FormItem>
               )}
             />
+            <div></div>
 
             <FormField
               control={form.control}
@@ -370,14 +379,13 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
             />
           </div>
           <div className="flex relative">
-            <Button type="submit" className="absolute right-0">
+            <Button
+              type="submit"
+              className="absolute right-0 bg-primary hover:scale-110 hover:bg-primary"
+            >
               Salvar
             </Button>
-            <Button
-              onClick={closeModal}
-              variant={"destructive"}
-              className="absolute right-20"
-            >
+            <Button onClick={closeModal} className="absolute right-20">
               Fechar
             </Button>
           </div>

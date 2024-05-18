@@ -1,55 +1,55 @@
-// "use server";
+"use server";
 
-// import { prisma } from "@/api/db";
-// import { Prisma } from "@prisma/client";
-// import { format } from "date-fns";
+import { prisma } from "@/app/api/db";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
-// export async function POST(req: Request) {
-//   try {
-//     const data = await req.json();
-//     if (!data || Object.keys(data).length === 0) {
-//       return new Response(JSON.stringify({ message: "Missing data!" }), {
-//         status: 400,
-//         headers: { "Content-Type": "application/json" },
-//       });
-//     }
+export async function POST(req: Request) {
+  try {
+    const data = await req.json();
+    if (!data || Object.keys(data).length === 0) {
+      return new Response(JSON.stringify({ message: "Missing data!" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-//     const createRecord = await prisma.equipmentManagement_TB.create({
-//       data,
-//     });
+    const createRecord = await prisma.equipmentManagement_TB.create({
+      data,
+    });
 
-//     return new Response(
-//       JSON.stringify({
-//         message: "Record Saved!",
-//         record: createRecord,
-//       }),
-//       { status: 201, headers: { "Content-Type": "application/json" } },
-//     );
-//   } catch (error: any) {
-//     if (
-//       error instanceof Prisma.PrismaClientKnownRequestError &&
-//       error.code === "P2002"
-//     ) {
-//       return new Response(
-//         JSON.stringify({
-//           message:
-//             "There is a record with that hostname, patrimonyID, serviceTag, or serial number",
-//         }),
-//         { status: 409, headers: { "Content-Type": "application/json" } },
-//       );
-//     }
+    return new Response(
+      JSON.stringify({
+        message: "Record Saved!",
+        record: createRecord,
+      }),
+      { status: 201, headers: { "Content-Type": "application/json" } },
+    );
+  } catch (error: any) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return new Response(
+        JSON.stringify({
+          message:
+            "There is a record with that hostname, patrimonyID, serviceTag, or serial number",
+        }),
+        { status: 409, headers: { "Content-Type": "application/json" } },
+      );
+    }
 
-//     console.error("Unhandled error:", error);
+    console.error("Unhandled error:", error);
 
-//     return new Response(
-//       JSON.stringify({
-//         message: "An unexpected error occurred.",
-//         error: error.message,
-//       }),
-//       { status: 500, headers: { "Content-Type": "application/json" } },
-//     );
-//   }
-// }
+    return new Response(
+      JSON.stringify({
+        message: "An unexpected error occurred.",
+        error: error.message,
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
+  }
+}
 
 // export async function GET(req: Request) {
 //   const { searchParams } = new URL(req.url);

@@ -25,8 +25,7 @@ export function AddBtn() {
       <Dialog open={isOpen}>
         <DialogTrigger asChild>
           <Button
-            variant="outline"
-            className="bg-black text-white flex gap-2"
+            className="bg-primary flex gap-2 "
             onClick={() => setIsOpen(!isOpen)}
           >
             <FontAwesomeIcon icon={faPlus} />

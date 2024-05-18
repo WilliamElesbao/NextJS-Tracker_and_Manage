@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/api/db";
+import { prisma } from "@/app/api/db";
 import { LoginData } from "@/lib/types/LoginData";
 import jwt, { Secret } from "jsonwebtoken";
 

@@ -1,13 +1,13 @@
 async function makePostRequests() {
   const url = "http://localhost:3000/api/computermanagement/";
 
-  for (let i = 11000; i <= 11004; i++) {
+  for (let i = 11000; i <= 11012; i++) {
     const patrimony = i;
 
     const data = {
       ticketNumber: i,
-      recivedBy_tech_FK: "cf5c6765-472c-474e-8156-b4c9c34d66a0",
-      // recivedBy_tech_FK: "6b31dfe2-db1c-47be-a0e9-4f3aa9dbdf17",
+      // recivedBy_tech_FK: "cf5c6765-472c-474e-8156-b4c9c34d66a0",
+      recivedBy_tech_FK: "6b31dfe2-db1c-47be-a0e9-4f3aa9dbdf17",
       hostname: `TM-NTB-${patrimony}`,
       patrimonyID: patrimony,
       serviceTag: `ST-NTB-0${i}`,

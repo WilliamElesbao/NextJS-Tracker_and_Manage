@@ -24,7 +24,7 @@ export function DetailsForm({ onCloseModal, data }: CheckOutFormProps) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="relative bg-white xl:w-[65%] rounded shadow-lg p-6 pb-12">
+      <div className="relative bg-card xl:w-[65%] rounded shadow-lg p-6 pb-12">
         <div className="flex flex-col gap-3">
           <div className="header-content">
             <h2 className="">Detalhes - Check-out</h2>
@@ -193,8 +193,7 @@ export function DetailsForm({ onCloseModal, data }: CheckOutFormProps) {
             </div>
             <Button
               onClick={closeModal}
-              variant={"destructive"}
-              className="absolute left-6 bottom-3"
+              className="absolute left-6 bottom-3 bg-primary"
             >
               Fechar
             </Button>

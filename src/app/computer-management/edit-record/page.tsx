@@ -12,20 +12,20 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { updateRecord } from "@/lib/actions";
+import { fetchRecordById } from "@/lib/data";
 import {
+  Records,
   computerTypes,
   defaultStatus,
   locations,
 } from "@/lib/types/RecordsTypes";
+import { DatePicker } from "@/ui/computer-management/date-picker";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Records } from "@/lib/types/RecordsTypes";
-import { DatePicker } from "@/ui/computer-management/date-picker";
-import { fetchRecordById } from "@/lib/data";
 
 export default function EditRecord() {
   const idFromSearchParams = useSearchParams().get("id")!!;
@@ -105,15 +105,15 @@ export default function EditRecord() {
       <main className="container flex flex-col mt-5 gap-5">
         <Link
           href={"/computer-management"}
-          className="border w-32 h-10 flex items-center justify-center rounded-md "
+          className="border rounded-full w-32 h-10 flex items-center justify-center hover:bg-primary duration-200 "
         >
           <ArrowLeft className="mr-2 size-4" />
           Voltar
         </Link>
         <div className="flex flex-col justify-center items-center gap-2">
-          <h2 className="text-xl text-black">Edit Record</h2>
+          <h2 className="text-xl ">Editar Registro</h2>
           <hr className="w-full h-1" />
-          <h3 className="text-xl text-black">{record?.hostname}</h3>
+          <h3 className="text-xl ">{record?.hostname}</h3>
         </div>
         {record ? (
           <>
@@ -268,6 +268,8 @@ export default function EditRecord() {
                   </Select>
                 </div>
 
+                <div></div>
+
                 <div>
                   <Label className="content-center">Outros periféricos</Label>
                   <Textarea
@@ -286,8 +288,13 @@ export default function EditRecord() {
                   />
                 </div>
               </div>
-              <div className="flex flex-col">
-                <Button type="submit">Save</Button>
+              <div className="flex justify-center">
+                <Button
+                  type="submit"
+                  className="bg-primary rounded-full hover:scale-110 duration-300 w-48 hover:bg-primary"
+                >
+                  Salvar
+                </Button>
               </div>
             </form>
           </>

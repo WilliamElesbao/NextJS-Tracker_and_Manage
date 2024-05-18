@@ -1,8 +1,8 @@
-import { Suspense } from "react";
 import { fetchAllRecords } from "@/lib/data";
 import { Records } from "@/lib/types/RecordsTypes";
 import { columns } from "@/ui/computer-management/columns";
 import { DataTable } from "@/ui/computer-management/data-table";
+import { Suspense } from "react";
 
 export default async function Page() {
   // TODO:

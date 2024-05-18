@@ -6,8 +6,8 @@ export default function SignInPage() {
   return (
     <>
       <AuthProvider>
-        <div className="bg-foreground min-h-screen flex flex-col justify-center">
-          <div className="bg-card flex flex-col xl:flex-row justify-center gap-5 p-5 rounded-md mx-auto shadow-lg shadow-black/50">
+        <div className="min-h-screen flex flex-col justify-center">
+          <div className="bg-card border flex flex-col xl:flex-row justify-center gap-5 p-5 rounded-xl mx-auto shadow-lg shadow-black/50">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center items-center">
               <Image
                 src="/img/tmsa_logo_1.png"
@@ -20,7 +20,7 @@ export default function SignInPage() {
             </div>
 
             <div className="sm:mx-auto sm:w-full sm:max-w-sm  flex flex-col justify-center align-middle gap-5">
-              <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-black">
+              <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text">
                 Tracker & Manage
               </h2>
 

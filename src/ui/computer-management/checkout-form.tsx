@@ -11,12 +11,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext/authContext";
 import { updateRecord } from "@/lib/actions";
+import { sendCheckOutMail } from "@/lib/mailer";
 import {
   ComputerStatus,
   ComputerType,
   Records,
   defaultStatus,
 } from "@/lib/types/RecordsTypes";
+import { Pencil1Icon } from "@radix-ui/react-icons";
+import clsx from "clsx";
 import { useContext, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -102,6 +105,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
           `Check-out realizado para: ${dataFromFormCheckout.hostname}`,
         );
         onCloseModal();
+        sendCheckOutMail(selectedRowId);
       } else {
         console.error("Erro ao realizar check-out");
         toast.error(`Erro ao realizar check-out`);
@@ -118,18 +122,31 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="relative bg-white xl:w-[65%] rounded shadow-lg p-6 pb-12">
+        <div className="relative bg-card xl:w-[65%] rounded shadow-lg p-6 pb-12">
           <div className="flex flex-col gap-3">
             <div className="header-content">
               <h2 className="">Confirmar Check-Out</h2>
-              <label className="border   border-neutral-800   bg-black   text-white   hover:bg-opacity-80   duration-200   absolute   right-6   top-6   p-1   px-2   rounded-lg   flex gap-3 cursor-pointer">
+              <Label
+                className={clsx(
+                  "flex gap-2 absolute right-6 top-6 border rounded-full p-2 cursor-pointer",
+                  {
+                    "bg-primary": chkBoxIsActive,
+                  },
+                )}
+              >
                 <input
                   type="checkbox"
                   checked={chkBoxIsActive}
                   onChange={handleCheckboxChange}
+                  className="sr-only"
                 />
-                Habilitar edição
-              </label>
+                <Pencil1Icon />
+                {!chkBoxIsActive ? (
+                  <span>Habilitar edição</span>
+                ) : (
+                  <span>Desabilitar edição</span>
+                )}
+              </Label>
             </div>
 
             <form
@@ -341,14 +358,13 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
                   />
                 </div>
               </div>
-              <Button type="submit" className="absolute right-6 bottom-3">
+              <Button
+                type="submit"
+                className="absolute right-6 bottom-3 bg-primary hover:scale-110 hover:bg-primary"
+              >
                 Concluir Check-out
               </Button>
-              <Button
-                onClick={closeModal}
-                variant={"destructive"}
-                className="absolute left-6 bottom-3"
-              >
+              <Button onClick={closeModal} className="absolute left-6 bottom-3">
                 Fechar
               </Button>
             </form>
