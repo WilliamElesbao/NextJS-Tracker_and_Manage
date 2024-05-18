@@ -28,7 +28,7 @@ export const computerTypes = {
   WKS: "Workstation",
 };
 
-export type ComputerStatus = "Available" | "Under Maintenance" | "Obsolete";
+export type ComputerStatus = "available" | "underMaintenance" | "obsolete";
 
 export const defaultStatus = {
   available: "Disponível",

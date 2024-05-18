@@ -1,7 +1,7 @@
 async function makePostRequests() {
   const url = "http://localhost:3000/api/computermanagement/";
 
-  for (let i = 11000; i <= 11012; i++) {
+  for (let i = 11000; i <= 11003; i++) {
     const patrimony = i;
 
     const data = {

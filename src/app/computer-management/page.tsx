@@ -12,18 +12,16 @@ export default async function Page() {
   const records: Records[] = await fetchAllRecords();
 
   return (
-    <main className="flex justify-center items-center">
-      <div className="container mx-auto py-10">
-        <Suspense
-          fallback={
-            <div className="container flex justify-center items-center ">
-              Loading...
-            </div>
-          }
-        >
-          <DataTable columns={columns} data={records} />
-        </Suspense>
-      </div>
+    <main className="container mt-14">
+      <Suspense
+        fallback={
+          <div className="container flex justify-center items-center ">
+            Loading...
+          </div>
+        }
+      >
+        <DataTable columns={columns} data={records} />
+      </Suspense>
     </main>
   );
 }

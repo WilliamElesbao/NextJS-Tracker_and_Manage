@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/providers/theme-provider";
+import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
-import "@/styles/globals.css";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { ModeToggle } from "@/components/theme-switcher";
 
 const fontSans = FontSans({
   subsets: ["latin"],

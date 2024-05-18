@@ -16,7 +16,6 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { DeleteRecord } from "./buttons";
-import { faL } from "@fortawesome/free-solid-svg-icons";
 
 export function DeleteBtn({
   rowData,
@@ -24,7 +23,6 @@ export function DeleteBtn({
   rowData: Pick<Records, "id" | "hostname">;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(rowData);
 
   return (
     <>
@@ -34,7 +32,7 @@ export function DeleteBtn({
             className="border border-destructive rounded-full bg-transparent text-destructive flex justify-center items-center w-6 h-6 p-1 opacity-80 hover:opacity-100 hover:bg-transparent duration-200"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <Trash2 className="text-red-500" />
+            <Trash2 className="text-destructive" />
             <span className="sr-only">Delete</span>
           </Button>
         </AlertDialogTrigger>
