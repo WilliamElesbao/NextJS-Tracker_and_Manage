@@ -46,7 +46,7 @@
         display: flex;
         position: relative;
         width: 20rem;
-        height: 25rem;
+        height: auto;
         padding: 1rem;
         margin: 0 auto;
       }
@@ -132,6 +132,9 @@
       .date > span {
         font-size: 0.85rem;
       }
+      label, span{
+        margin-bottom: 1rem ;
+      }
     </style>
   </head>
   <body>
@@ -167,21 +170,45 @@
                 <br />
 
                 <label>Entregue por:</label>
-                <span>${userName}</span>
+                <span>${broughtBy}</span>
+                <br />
+
+                <label>E-mail:</label>
+                <span>${broughtBy_email}</span>
                 <br />
 
                 <label>Recebido por:</label>
-                <span>${technicianName}</span>
-
+                <span>${recivedBy}</span>
                 <br />
+                
+                <label>E-mail:</label>
+                <span>${recivedBy_email}</span>
+                <br />
+
                 <label>Hostname:</label>
                 <span>${hostname}</span>
 
                 <br />
                 <label>Patrimônio:</label>
                 <span>${patrimonyID}</span>
-
                 <br />
+
+                ${
+                  serviceTag
+                    ? `
+                  <label>Service tag:</label>
+                  <span>${serviceTag}</span>
+                  <br />
+                `
+                    : ""
+                }
+
+                ${
+                  serialNumber
+                    ? `<label>Serial number:</label> <span>${serialNumber}</span> <br />`
+                    : ""
+                }
+
                 <label>Tipo:</label>
                 <span>${computerType}</span>
 
@@ -190,10 +217,26 @@
                 <span>${location}</span>
 
                 <br />
+                ${
+                  othersEquipment
+                    ? `
                 <label>Equipamentos:</label>
                 <span>${othersEquipment}</span>
 
+                <br />`
+                    : ""
+                }
+                ${
+                  remarks
+                    ? `
+                <label>Observações:</label>
+                <span>${remarks}</span>
+
                 <br />
+                `
+                    : ""
+                }
+                
               </div>
             </div>
             <div class="date">
