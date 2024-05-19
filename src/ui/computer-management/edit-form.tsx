@@ -73,7 +73,6 @@ export default function EditForm() {
   }, [recordById, form]);
 
   async function handleOnSubmit(formData: z.infer<typeof formSchema>) {
-
     const data: any = {
       ...formData,
       recivedBy_tech_FK: recordById?.technician.id,
@@ -158,6 +157,7 @@ export default function EditForm() {
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        disabled={(date) => date > new Date()}
                       />
                     </PopoverContent>
                   </Popover>

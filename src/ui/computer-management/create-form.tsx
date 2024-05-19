@@ -153,6 +153,7 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        disabled={(date) => date > new Date()}
                       />
                     </PopoverContent>
                   </Popover>
