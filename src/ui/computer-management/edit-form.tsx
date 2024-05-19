@@ -89,13 +89,13 @@ export default function EditForm() {
     };
 
     try {
-      // TODO: Tratar erro ao salvar quando ocorrer conflito com ST, ST, HOSTNAME, PATRIMONIO
-      if (await updateRecord(recordById!.id, data)) {
+      const result = await updateRecord(recordById!.id, data);
+      if (result === true) {
         toast.success("Registro atualizado!");
         router.back();
       } else {
-        toast.error(`Erro ao atualizar`);
-        throw new Error("Erro ao atualizar");
+        toast.error(result);
+        throw new Error("Failed to add computer");
       }
     } catch (error) {
       console.error(error);

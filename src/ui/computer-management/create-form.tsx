@@ -81,11 +81,11 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
     };
 
     try {
-      // TODO: Tratar erro ao salvar quando ocorrer conflito com ST, ST, HOSTNAME, PATRIMONIO
-      if (await createRecord(data)) {
+      const result = await createRecord(data);
+      if (result === true) {
         toast.success("Registro criado com sucesso!");
       } else {
-        toast.error(`Erro ao salvar`);
+        toast.error(result);
         throw new Error("Failed to add computer");
       }
       onCloseModal();

@@ -105,7 +105,8 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
     };
 
     try {
-      if (await updateRecord(data!.id, checkoutData)) {
+      const result = await updateRecord(data!.id, checkoutData);
+      if (result === true) {
         toast.success(
           `Check-out realizado para: ${dataFromFormCheckout.hostname}`,
         );
@@ -113,7 +114,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
         sendCheckOutMail(data!.id);
       } else {
         console.error("Erro ao realizar check-out");
-        toast.error(`Erro ao realizar check-out`);
+        toast.error(`Erro ao realizar check-out: ${result}`);
       }
     } catch (error) {
       console.error("Check-out error: ", error);
