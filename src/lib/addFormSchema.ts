@@ -48,12 +48,12 @@ export const formSchema = z.object({
 
   // TODO: CHECKOUT VALIDATION
 
-  // givenBackBy_tech_FK: z
-  //   .string()
-  //   .min(1, { message: "TODO: VALIDATION USING ZOD" }),
-  // WhoReceived_user_FK: z
-  //   .string()
-  //   .min(1, { message: "TODO: VALIDATION USING ZOD" }),
-  // checkOutDate: z.string().min(1, { message: "TODO: VALIDATION USING ZOD" }),
-  // checkoutStatus: z.string().min(1, { message: "TODO: VALIDATION USING ZOD" }),
+  givenBackBy_tech_FK: z.optional(z.string()),
+
+  WhoReceived_user_FK: z.optional(z.union([z.string(), z.number()])),
+  // WhoReceived_user_FK: z.coerce.number({
+  //   message: "Informe o usuário que recebeu a máquina",
+  // }),
+  // checkOutDate: z.date({ required_error: "Selecione a data de entrada" }),
+  // checkoutStatus: z.boolean(),
 });

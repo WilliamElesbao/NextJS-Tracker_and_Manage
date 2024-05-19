@@ -1,29 +1,51 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext/authContext";
 import { updateRecord } from "@/lib/actions";
+import { formSchema } from "@/lib/addFormSchema";
 import { sendCheckOutMail } from "@/lib/mailer";
 import {
-  ComputerStatus,
-  ComputerType,
   Records,
+  computerTypes,
   defaultStatus,
+  locations,
 } from "@/lib/types/RecordsTypes";
-import { Pencil1Icon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon, Pencil1Icon } from "@radix-ui/react-icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
 import clsx from "clsx";
-import { useContext, useEffect, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { format } from "date-fns";
+import { Calendar } from "lucide-react";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { DatePicker } from "./date-picker";
+import { z } from "zod";
 
 type CheckOutFormProps = {
   onCloseModal: () => void;
@@ -31,81 +53,64 @@ type CheckOutFormProps = {
 };
 
 export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
-  const [selectedRowId, setSelectedRowId] = useState<string>();
-  const [recivedBy_tech_FK, setRecivedBy_tech_FK] = useState<string>();
-  const [computerType, setComputerType] = useState<ComputerType | string>();
-  const [location, setLocation] = useState<Location | string>();
-  const [computerStatus, setComputerStatus] = useState<
-    ComputerStatus | string
-  >();
-  const [broughtBy_user_FK, setBroughtBy_user_FK] = useState<string | number>();
-  const [whoReceived_user_FK, setWhoReceived_user_FK] = useState<
-    string | number | null | undefined
-  >();
-  const [checkInDate, setCheckInDate] = useState<string | Date>();
   const { user } = useContext(AuthContext);
   const [chkBoxIsActive, setChkBoxIsActive] = useState(false);
-  const { handleSubmit, register, setValue } = useForm();
 
-  useEffect(() => {
-    setValue("ticketNumber", data?.ticketNumber);
-    setValue("hostname", data?.hostname || "");
-    setValue("patrimonyID", data?.patrimonyID);
-    setValue("serviceTag", data?.serviceTag);
-    setValue("serialNumber", data?.serialNumber);
-    setValue("othersEquipment", data?.othersEquipment);
-    setValue("remarks", data?.remarks);
-
-    setRecivedBy_tech_FK(data?.technician.id);
-    setComputerType(data?.computerType);
-    setLocation(data?.location);
-    setComputerStatus(data?.computerStatus);
-    setBroughtBy_user_FK(data?.broughtBy_user_FK);
-    setWhoReceived_user_FK(data?.broughtBy_user_FK);
-    setCheckInDate(data?.checkInDate);
-    setSelectedRowId(data?.id);
-  }, [data]);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ticketNumber: Number(data?.ticketNumber),
+      checkInDate: new Date(data!.checkInDate),
+      recivedBy_tech_FK: data?.technician.username,
+      broughtBy_user_FK: data?.user.id,
+      hostname: data?.hostname,
+      patrimonyID: Number(data?.patrimonyID),
+      serviceTag: data?.serviceTag! ?? "",
+      serialNumber: data?.serialNumber! ?? "",
+      computerType: data?.computerType,
+      location: data?.location,
+      computerStatus: data?.computerStatus,
+      WhoReceived_user_FK: data?.user.id!,
+      othersEquipment: data?.othersEquipment!,
+      remarks: data?.remarks!,
+    },
+  });
 
   const handleCheckboxChange = () => {
     setChkBoxIsActive(!chkBoxIsActive);
   };
 
-  const checkoutConfirmed: SubmitHandler<FieldValues> = async (
-    dataFromFormCheckout: Records | FieldValues,
-  ) => {
-    const data = {
-      ticketNumber: Number(dataFromFormCheckout.ticketNumber),
-      recivedBy_tech_FK: recivedBy_tech_FK,
-      hostname: dataFromFormCheckout.hostname,
-      patrimonyID: Number(dataFromFormCheckout.patrimonyID),
+  async function checkoutConfirmed(
+    dataFromFormCheckout: z.infer<typeof formSchema>,
+  ) {
+    const checkoutData = {
+      ...dataFromFormCheckout,
+      recivedBy_tech_FK: data?.technician.id,
+      givenBackBy_tech_FK: user?.id,
+      WhoReceived_user_FK: Number(dataFromFormCheckout.WhoReceived_user_FK),
       serviceTag:
-        dataFromFormCheckout.serviceTag === ""
+        dataFromFormCheckout.serviceTag === "" ||
+        dataFromFormCheckout.serviceTag === undefined
           ? null
           : dataFromFormCheckout.serviceTag,
       serialNumber:
-        dataFromFormCheckout.serialNumber === ""
+        dataFromFormCheckout.serialNumber === "" ||
+        dataFromFormCheckout.serialNumber === undefined
           ? null
           : dataFromFormCheckout.serialNumber,
-      computerType: computerType,
-      location: location,
-      computerStatus: computerStatus,
-      broughtBy_user_FK: Number(broughtBy_user_FK),
-      othersEquipment: dataFromFormCheckout.othersEquipment,
-      remarks: dataFromFormCheckout.remarks,
-      checkInDate: checkInDate,
-      givenBackBy_tech_FK: user?.id,
-      WhoReceived_user_FK: Number(whoReceived_user_FK),
+      othersEquipment: dataFromFormCheckout.othersEquipment ?? "",
+      remarks: dataFromFormCheckout.remarks ?? "",
       checkOutDate: new Date(),
       checkoutStatus: true,
     };
 
     try {
-      if (await updateRecord(selectedRowId, data)) {
+      if (await updateRecord(data!.id, checkoutData)) {
         toast.success(
           `Check-out realizado para: ${dataFromFormCheckout.hostname}`,
         );
         onCloseModal();
-        sendCheckOutMail(selectedRowId);
+        sendCheckOutMail(data!.id);
       } else {
         console.error("Erro ao realizar check-out");
         toast.error(`Erro ao realizar check-out`);
@@ -113,7 +118,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
     } catch (error) {
       console.error("Check-out error: ", error);
     }
-  };
+  }
 
   const closeModal = () => {
     onCloseModal();
@@ -122,7 +127,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="relative bg-card xl:w-[65%] rounded shadow-lg p-6 pb-12">
+        <div className="relative bg-card xl:w-[65%] rounded shadow-lg p-6 pb-16">
           <div className="flex flex-col gap-3">
             <div className="header-content">
               <h2 className="">Confirmar Check-Out</h2>
@@ -149,225 +154,394 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
               </Label>
             </div>
 
-            <form
-              onSubmit={handleSubmit(checkoutConfirmed)}
-              method="PUT"
-              className="flex flex-col gap-5 w-full p-6"
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <div id="ticketNumber">
-                  <Label className="content-center">Numero SATI</Label>
-                  <Input
-                    disabled={!chkBoxIsActive}
-                    defaultValue={data?.ticketNumber}
-                    {...register("ticketNumber")}
-                  ></Input>
-                </div>
-
-                <div>
-                  <Label className="content-center">Entrada em</Label>
-                  <DatePicker
-                    defaultValue={
-                      data?.checkInDate ? new Date(data?.checkInDate) : null
-                    }
-                    disabled={true}
-                  />
-                </div>
-
-                <div className="technician">
-                  <Label className="content-center">Entregue ao técnico</Label>
-                  <Input
-                    defaultValue={data?.technician.username}
-                    disabled
-                  ></Input>
-                </div>
-
-                <div>
-                  <Label className="content-center">
-                    Entregue pelo usuário
-                  </Label>
-                  <Select
-                    defaultValue={data?.broughtBy_user_FK.toString()}
-                    onValueChange={setBroughtBy_user_FK}
-                    required
-                    disabled
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select an employee" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">William Elesbão</SelectItem>
-                      <SelectItem value="2">willtubetech</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="content-center">Hostname</Label>
-                  <Input
-                    defaultValue={data?.hostname}
-                    {...register("hostname")}
-                    disabled={!chkBoxIsActive}
-                  ></Input>
-                </div>
-
-                <div>
-                  <Label className="content-center">Patrimônio</Label>
-                  <Input
-                    defaultValue={data?.patrimonyID}
-                    {...register("patrimonyID")}
-                    disabled={!chkBoxIsActive}
-                  ></Input>
-                </div>
-
-                <div>
-                  <Label className="content-center">Service Tag</Label>
-                  {data?.serviceTag ? (
-                    <Input
-                      defaultValue={data?.serviceTag}
-                      {...register("serviceTag")}
-                      disabled={!chkBoxIsActive}
-                    ></Input>
-                  ) : (
-                    <Input
-                      {...register("serviceTag")}
-                      disabled={!chkBoxIsActive}
-                    ></Input>
-                  )}
-                </div>
-
-                <div>
-                  <Label className="content-center">Serial Number</Label>
-                  {data?.serialNumber ? (
-                    <Input
-                      defaultValue={data.serialNumber}
-                      {...register("serialNumber")}
-                      disabled={!chkBoxIsActive}
-                    ></Input>
-                  ) : (
-                    <Input
-                      {...register("serialNumber")}
-                      disabled={!chkBoxIsActive}
-                    ></Input>
-                  )}
-                </div>
-
-                <div>
-                  <Label className="content-center">Tipo / Modelo</Label>
-                  <Select
-                    onValueChange={setComputerType}
-                    required
-                    defaultValue={data?.computerType}
-                    disabled={!chkBoxIsActive}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="NTB">Notebook</SelectItem>
-                      <SelectItem value="DSK">Desktop</SelectItem>
-                      <SelectItem value="WKS">Workstation</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="content-center">Localização</Label>
-                  <Select
-                    defaultValue={data?.location}
-                    onValueChange={setLocation}
-                    required
-                    disabled={!chkBoxIsActive}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Matriz">Matriz</SelectItem>
-                      <SelectItem value="SP">São Paulo</SelectItem>
-                      <SelectItem value="BH">Belo Horizonte</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="content-center">Status da máquina</Label>
-                  <Select
-                    defaultValue={data?.computerStatus}
-                    onValueChange={setComputerStatus}
-                    required
-                    disabled={!chkBoxIsActive}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a status" />
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      {Object.entries(defaultStatus).map(([key, value]) => (
-                        <SelectItem key={key} value={key}>
-                          {value}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="content-center">
-                    Entregue pelo técnico
-                  </Label>
-                  <Input defaultValue={user?.username} disabled></Input>
-                </div>
-
-                <div>
-                  <Label className="content-center">Entregue ao usuário</Label>
-                  <Select
-                    defaultValue={data?.broughtBy_user_FK.toString()}
-                    onValueChange={setWhoReceived_user_FK}
-                    required
-                    disabled={!chkBoxIsActive}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select an employee" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">William Elesbão</SelectItem>
-                      <SelectItem value="2">willtubetech</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div></div>
-
-                <div>
-                  <Label className="content-center">Outros periféricos</Label>
-                  <Textarea
-                    defaultValue={data?.othersEquipment || ""}
-                    {...register("othersEquipment")}
-                    className="resize-none w-full h-40"
-                    disabled={!chkBoxIsActive}
-                  />
-                </div>
-
-                <div>
-                  <Label className="content-center">Observações</Label>
-                  <Textarea
-                    defaultValue={data?.remarks || ""}
-                    {...register("remarks")}
-                    className="resize-none w-full h-40"
-                    disabled={!chkBoxIsActive}
-                  />
-                </div>
-              </div>
-              <Button
-                type="submit"
-                className="absolute right-6 bottom-3 bg-primary hover:scale-110 hover:bg-primary"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(checkoutConfirmed)}
+                className="w-full h-full flex flex-col gap-5"
               >
-                Concluir Check-out
-              </Button>
-              <Button onClick={closeModal} className="absolute left-6 bottom-3">
-                Fechar
-              </Button>
-            </form>
+                <div className="grid grid-cols-2 gap-2 ">
+                  <FormField
+                    control={form.control}
+                    name="ticketNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Número SATI</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Número SATI"
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="checkInDate"
+                    render={({ field }) => (
+                      <FormItem className="">
+                        <FormLabel>Entrada em</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Selecione uma data</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="recivedBy_tech_FK"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Entregue ao técnico</FormLabel>
+                        <FormControl>
+                          <Input type="text" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="broughtBy_user_FK"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Entregue pelo usuário</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value.toString()}
+                            disabled
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select an employee" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Users</SelectLabel>
+                                <SelectItem value="1">
+                                  William Elesbão
+                                </SelectItem>
+                                <SelectItem value="2">willtubetech</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="hostname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Hostname</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Input
+                            placeholder="Hostname"
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="patrimonyID"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Patrimônio</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Patrimony"
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="serviceTag"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service Tag</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="serialNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Serial Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="computerType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tipo / Modelo</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Tipo / Modelo..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(computerTypes).map(
+                                ([key, value]) => (
+                                  <SelectItem key={key} value={key}>
+                                    {value}
+                                  </SelectItem>
+                                ),
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Localização</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Locations</SelectLabel>
+                                {locations.map((location) => (
+                                  <SelectItem key={location} value={location}>
+                                    {location}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="computerStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status da máquina</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Status</SelectLabel>
+                                {Object.entries(defaultStatus).map(
+                                  ([key, value]) => (
+                                    <SelectItem key={key} value={key}>
+                                      {value}
+                                    </SelectItem>
+                                  ),
+                                )}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="givenBackBy_tech_FK"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Entregue pelo técnico</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            defaultValue={user?.username}
+                            disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="WhoReceived_user_FK"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Entregue ao usuário</FormLabel>
+                        <span className="ml-2 text-destructive">*</span>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value.toString()}
+                            disabled={!chkBoxIsActive}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select an employee" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Users</SelectLabel>
+                                <SelectItem value="1">
+                                  William Elesbão
+                                </SelectItem>
+                                <SelectItem value="2">willtubetech</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div></div>
+
+                  <FormField
+                    control={form.control}
+                    name="othersEquipment"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Outros periféricos</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Ex.:  Mouse, Teclado, ..."
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="remarks"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Observações:</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Ex.: Any comments..."
+                            {...field}
+                            disabled={!chkBoxIsActive}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="absolute right-6 bottom-3 bg-primary hover:scale-110 hover:bg-primary"
+                >
+                  Concluir Check-out
+                </Button>
+                <Button
+                  onClick={closeModal}
+                  className="absolute left-6 bottom-3"
+                >
+                  Fechar
+                </Button>
+              </form>
+            </Form>
           </div>
         </div>
       </div>
