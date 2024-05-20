@@ -18,9 +18,11 @@ import { usePathname } from "next/navigation";
 
 const links = [
   // TODO: add icons
+  // { name: "Home", href: "/" },
+  { name: "Dashboard", href: "/computer-management/dashboard" },
   { name: "Device Control", href: "/computer-management" },
-  { name: "Empréstimo de itens", href: "#" },
-  { name: "Rastreamento de aquisições", href: "#" },
+  // { name: "Empréstimo de itens", href: "#" },
+  // { name: "Rastreamento de aquisições", href: "#" },
 ];
 
 export function Sidebar() {

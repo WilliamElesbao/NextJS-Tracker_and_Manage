@@ -7,12 +7,16 @@ import {
   Location,
 } from "@/lib/types/RecordsTypes";
 import { format } from "date-fns";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function fetchAllRecords() {
   const recordsFromServer = await prisma.equipmentManagement_TB.findMany({
     include: {
       technician: { select: { id: true, username: true, email: true } },
       user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 
@@ -76,5 +80,81 @@ export async function fetchTechById(id: string) {
     return techById;
   } catch (error) {
     console.error("Erro ao buscar o técnico pelo id: ", error);
+  }
+}
+
+export async function fetchCardData() {
+  noStore();
+
+  try {
+    const numberOfAvailableMachine = await prisma.equipmentManagement_TB.count({
+      where: {
+        AND: [{ computerStatus: "available" }, { checkoutStatus: null }],
+      },
+    });
+    const numberOfUnderMaintenanceMachine =
+      await prisma.equipmentManagement_TB.count({
+        where: { computerStatus: "underMaintenance" },
+      });
+    const totalCheckIn = await prisma.equipmentManagement_TB.count({
+      where: { checkoutStatus: null },
+    });
+    const totalCheckOut = await prisma.equipmentManagement_TB.count({
+      where: { checkoutStatus: true },
+    });
+
+    await prisma.$disconnect();
+
+    return {
+      numberOfAvailableMachine,
+      numberOfUnderMaintenanceMachine,
+      totalCheckIn,
+      totalCheckOut,
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch card data.");
+  }
+}
+
+export async function fetchLatestCheckInOut() {
+  noStore();
+
+  try {
+    const latestCheckIn = await prisma.equipmentManagement_TB.findFirst({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        technician: {
+          select: {
+            username: true,
+            email: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const latestCheckOut = await prisma.equipmentManagement_TB.findFirst({
+      where: {
+        checkoutStatus: true,
+      },
+      orderBy: {
+        checkOutDate: "desc",
+      },
+    });
+
+    await prisma.$disconnect();
+
+    return { latestCheckIn, latestCheckOut };
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch card data.");
   }
 }
