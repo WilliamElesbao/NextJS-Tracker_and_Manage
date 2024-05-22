@@ -23,6 +23,7 @@ export default async function CardWrapper() {
 
   return (
     <>
+      <Card title="Total Check-in" value={totalCheckIn} type="checkIn" />
       <Card
         title="Máquinas Disponíveis"
         value={numberOfAvailableMachine}
@@ -33,7 +34,6 @@ export default async function CardWrapper() {
         value={numberOfUnderMaintenanceMachine}
         type="underMaintenance"
       />
-      <Card title="Total Check-in" value={totalCheckIn} type="checkIn" />
       <Card title="Total Check-out" value={totalCheckOut} type="checkOut" />
     </>
   );

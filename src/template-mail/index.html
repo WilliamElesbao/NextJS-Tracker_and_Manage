@@ -132,8 +132,9 @@
       .date > span {
         font-size: 0.85rem;
       }
-      label, span{
-        margin-bottom: 1rem ;
+      label,
+      span {
+        margin-bottom: 1rem;
       }
     </style>
   </head>
@@ -180,7 +181,7 @@
                 <label>Recebido por:</label>
                 <span>${recivedBy}</span>
                 <br />
-                
+
                 <label>E-mail:</label>
                 <span>${recivedBy_email}</span>
                 <br />
@@ -193,21 +194,12 @@
                 <span>${patrimonyID}</span>
                 <br />
 
-                ${
-                  serviceTag
-                    ? `
-                  <label>Service tag:</label>
-                  <span>${serviceTag}</span>
-                  <br />
-                `
-                    : ""
-                }
-
-                ${
-                  serialNumber
-                    ? `<label>Serial number:</label> <span>${serialNumber}</span> <br />`
-                    : ""
-                }
+                ${ serviceTag ? `
+                <label>Service tag:</label>
+                <span>${serviceTag}</span>
+                <br />
+                ` : "" } ${ serialNumber ? `<label>Serial number:</label>
+                <span>${serialNumber}</span> <br />` : "" }
 
                 <label>Tipo:</label>
                 <span>${computerType}</span>
@@ -217,26 +209,16 @@
                 <span>${location}</span>
 
                 <br />
-                ${
-                  othersEquipment
-                    ? `
+                ${ othersEquipment ? `
                 <label>Equipamentos:</label>
                 <span>${othersEquipment}</span>
 
-                <br />`
-                    : ""
-                }
-                ${
-                  remarks
-                    ? `
+                <br />` : "" } ${ remarks ? `
                 <label>Observações:</label>
                 <span>${remarks}</span>
 
                 <br />
-                `
-                    : ""
-                }
-                
+                ` : "" }
               </div>
             </div>
             <div class="date">

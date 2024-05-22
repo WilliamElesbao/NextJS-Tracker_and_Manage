@@ -1,7 +1,7 @@
 async function makePostRequests() {
   const url = "http://localhost:3000/api/computermanagement/";
 
-  for (let i = 11000; i <= 11011; i++) {
+  for (let i = 11000; i <= 11012; i++) {
     const patrimony = i;
 
     const data = {
@@ -15,8 +15,8 @@ async function makePostRequests() {
       computerType: "NTB",
       location: "Matriz",
       computerStatus: "available",
-      broughtBy_user_FK: 1,
-      // broughtBy_user_FK: 2,
+      // broughtBy_user_FK: 1,
+      broughtBy_user_FK: 2,
       othersEquipment: "",
       remarks: "",
       checkInDate: new Date(),

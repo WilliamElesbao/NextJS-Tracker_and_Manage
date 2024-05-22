@@ -37,23 +37,20 @@ export const formSchema = z.object({
   othersEquipment: z.optional(z.string()),
   remarks: z.optional(z.string()),
 
-  broughtBy_user_FK: z.coerce.number({
-    message: "Informe o usuário que entregou a máquina",
-  }),
+  broughtBy_user_FK: z.union([
+    z.coerce.number({
+      message: "Informe o usuário que entregou a máquina",
+    }),
+    z.string({
+      message: "Informe o usuário que entregou a máquina",
+    }),
+  ]),
 
   recivedBy_tech_FK: z.string(),
   checkInDate: z.date({ required_error: "Selecione a data de entrada" }),
 
   // to check out
 
-  // TODO: CHECKOUT VALIDATION
-
   givenBackBy_tech_FK: z.optional(z.string()),
-
   WhoReceived_user_FK: z.optional(z.union([z.string(), z.number()])),
-  // WhoReceived_user_FK: z.coerce.number({
-  //   message: "Informe o usuário que recebeu a máquina",
-  // }),
-  // checkOutDate: z.date({ required_error: "Selecione a data de entrada" }),
-  // checkoutStatus: z.boolean(),
 });

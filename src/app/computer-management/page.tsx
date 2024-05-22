@@ -1,5 +1,6 @@
 import { fetchAllRecords } from "@/lib/data";
-import { Records } from "@/lib/types/RecordsTypes";
+import { Records } from "@/lib/types/Records";
+import { NavBreadcrumb } from "@/ui/computer-management/breadcrumb";
 import { columns } from "@/ui/computer-management/columns";
 import { DataTable } from "@/ui/computer-management/data-table";
 import { Suspense } from "react";
@@ -13,6 +14,7 @@ export default async function Page() {
 
   return (
     <main className="container mt-14">
+      <NavBreadcrumb />
       <Suspense
         fallback={
           <div className="container flex justify-center items-center ">

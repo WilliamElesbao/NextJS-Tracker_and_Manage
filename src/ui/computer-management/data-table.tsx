@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchRecordById, fetchTechById } from "@/lib/data";
-import { Records } from "@/lib/types/RecordsTypes";
+import { Records, Technician, User } from "@/lib/types/Records";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CheckCircledIcon, ExitIcon, ReaderIcon } from "@radix-ui/react-icons";
@@ -34,13 +34,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import clsx from "clsx";
 import * as React from "react";
 import { useState } from "react";
 import { DataTableProps } from "../../lib/types/DataTableProps";
 import { AddBtn } from "./add-button";
 import { CheckOutForm } from "./checkout-form";
 import { DetailsForm } from "./details-form";
-import clsx from "clsx";
 
 interface RowData {
   checkOutDate?: string;
@@ -50,6 +50,14 @@ interface RowData {
 interface ColumnDefinition extends ColumnDefBase<RowData, unknown> {
   accessorKey: string;
 }
+
+type ModifiedRecords = Omit<
+  Records,
+  "givenBackBy_tech_FK" | "WhoReceived_user_FK"
+> & {
+  givenBackBy_tech_FK: Technician;
+  WhoReceived_user_FK: User;
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -87,7 +95,7 @@ export function DataTable<TData, TValue>({
 
   const [isOpenDetails, setIsOpenDetails] = useState(false);
 
-  const [dataById, setDataById] = useState<Records>();
+  const [dataById, setDataById] = useState<ModifiedRecords | Records>();
 
   const filteredRows = table.getRowModel().rows.filter((row) => {
     // Se o checkbox estiver selecionado, filtra as linhas com checkoutStatus === true
@@ -101,7 +109,11 @@ export function DataTable<TData, TValue>({
 
   const handleCheckoutClick = async (rowId: string) => {
     try {
-      const data: any = await fetchRecordById(rowId);
+      const data = await fetchRecordById(rowId);
+
+      if (!data) {
+        throw new Error("Erro ao tentar encontrar o registro a partir do id");
+      }
       setDataById(data);
       setIsModalOpen(true);
     } catch (error) {
@@ -111,12 +123,23 @@ export function DataTable<TData, TValue>({
 
   const openDetails = async (id: string) => {
     try {
-      const dataById: any = await fetchRecordById(id);
-      const tech = await fetchTechById(dataById.givenBackBy_tech_FK);
+      const dataById = await fetchRecordById(id);
+      if (!dataById) {
+        throw new Error("Registro não encontrado");
+      }
+
+      const tech = await fetchTechById(
+        dataById.givenBackBy_tech_FK!.toString(),
+      );
+      if (!tech) {
+        throw new Error("Técnico não encontrado");
+      }
+
       const data = {
         ...dataById,
         givenBackBy_tech_FK: tech,
       };
+
       setDataById(data);
       setIsOpenDetails(true);
     } catch (error) {
@@ -325,14 +348,14 @@ export function DataTable<TData, TValue>({
       {isModalOpen && (
         <CheckOutForm
           onCloseModal={() => setIsModalOpen(false)}
-          data={dataById}
+          data={dataById as Records}
         />
       )}
 
       {isOpenDetails && (
         <DetailsForm
           onCloseModal={() => setIsOpenDetails(false)}
-          data={dataById}
+          data={dataById as ModifiedRecords}
         />
       )}
     </>

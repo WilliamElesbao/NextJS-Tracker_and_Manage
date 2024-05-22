@@ -1,12 +1,12 @@
-import { NavHeader } from "@/ui/navHeader";
 import { AuthProvider } from "@/contexts/AuthContext/authContext";
+import { NavHeader } from "@/ui/navHeader";
 import { Sidebar } from "@/ui/sidebar";
 import { ToastContainer } from "react-toastify";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <div className="">
+      <div>
         <div className="relative h-full">
           <NavHeader />
           <div className="absolute left-5 top-1/2 transform -translate-y-1/2 ">
@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <main className="">{children}</main>
+        <main>{children}</main>
 
         <ToastContainer
           position="bottom-right"

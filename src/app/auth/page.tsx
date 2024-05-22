@@ -1,6 +1,11 @@
 import { AuthProvider } from "@/contexts/AuthContext/authContext";
+import { Metadata } from "next";
 import Image from "next/image";
 import { SignInForm } from "./components/ui/signin-form";
+
+export const metadata: Metadata = {
+  title: "Login",
+};
 
 export default function SignInPage() {
   return (

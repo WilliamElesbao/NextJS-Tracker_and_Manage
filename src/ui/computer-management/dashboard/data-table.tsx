@@ -1,48 +1,33 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
+import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { fetchAllRecords } from "@/lib/data";
-import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { Records } from "@/lib/types/Records";
 import { EnterIcon } from "@radix-ui/react-icons";
-
-// Componente de Paginação
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  const pages = [...Array(totalPages).keys()].map((num) => num + 1);
-
-  return (
-    <div className="flex justify-center mt-4">
-      {pages.map((page) => (
-        <button
-          key={page}
-          className={clsx("mx-1 px-3 py-1 rounded", {
-            "bg-primary text-white": page === currentPage,
-            "bg-background border": page !== currentPage,
-          })}
-          onClick={() => onPageChange(page)}
-        >
-          {page}
-        </button>
-      ))}
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import { Pagination } from "./pagination";
+import { TableBodyRows } from "./table-body-rows";
+import { TableHeaderRow } from "./table-header-row";
 
 export function DataTable() {
-  const [allRecords, setAllRecords] = useState([]);
+  const [allRecords, setAllRecords] = useState<
+    Pick<
+      Records,
+      | "id"
+      | "ticketNumber"
+      | "hostname"
+      | "computerStatus"
+      | "user"
+      | "technician"
+      | "checkoutStatus"
+    >[]
+  >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
 
   useEffect(() => {
     async function fetchData() {
       const records = await fetchAllRecords();
-      // Filtrar registros onde checkOutStatus é true
       const filteredRecords = records.filter(
         (record) => record.checkoutStatus !== true,
       );
@@ -51,15 +36,13 @@ export function DataTable() {
     fetchData();
   }, []);
 
-  // Calcular o número total de páginas
   const totalPages = Math.ceil(allRecords.length / recordsPerPage);
 
-  // Calcular os registros para a página atual
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
   const currentRecords = allRecords.slice(startIndex, endIndex);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
@@ -71,33 +54,10 @@ export function DataTable() {
       </div>
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="truncate text-center">Número SATI</TableHead>
-            <TableHead className="truncate text-center">Hostname</TableHead>
-            <TableHead className="truncate text-center">Status</TableHead>
-            <TableHead className="truncate text-center">Entregue por</TableHead>
-            <TableHead className="truncate text-center">Recebido por</TableHead>
-          </TableRow>
+          <TableHeaderRow />
         </TableHeader>
         <TableBody>
-          {currentRecords.map((record) => (
-            <TableRow key={record.id} className="truncate text-center">
-              <TableCell>{record.ticketNumber}</TableCell>
-              <TableCell>{record.hostname}</TableCell>
-              <TableCell className="flex justify-center items-center mt-1">
-                <span
-                  className={clsx("h-2 w-2 rounded-full", {
-                    "bg-lime-600": record.computerStatus === "available",
-                    "bg-amber-400":
-                      record.computerStatus === "underMaintenance",
-                    "bg-destructive": record.computerStatus === "obsolete",
-                  })}
-                />
-              </TableCell>
-              <TableCell>{record.user.name}</TableCell>
-              <TableCell>{record.technician.username}</TableCell>
-            </TableRow>
-          ))}
+          <TableBodyRows records={currentRecords} />
         </TableBody>
       </Table>
       <Pagination

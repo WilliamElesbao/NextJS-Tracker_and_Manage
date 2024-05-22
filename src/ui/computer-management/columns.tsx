@@ -2,7 +2,7 @@
 
 import { EditBtn } from "@/ui/computer-management/buttons";
 import { ColumnDef } from "@tanstack/react-table";
-import { Records } from "../../lib/types/RecordsTypes";
+import { Records } from "../../lib/types/Records";
 import { DeleteBtn } from "./dialog-delete";
 
 export const columns: ColumnDef<Records>[] = [
@@ -60,7 +60,6 @@ export const columns: ColumnDef<Records>[] = [
         return (
           <div className="flex justify-center gap-2 items-center">
             <EditBtn id={rowData.id} />
-            {/* <DeleteRecord rowData={rowData} /> */}
             <DeleteBtn rowData={rowData} />
           </div>
         );

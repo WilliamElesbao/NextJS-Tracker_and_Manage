@@ -2,6 +2,11 @@ import { NavBreadcrumb } from "@/ui/computer-management/dashboard/breadcrumb";
 import CardWrapper from "@/ui/computer-management/dashboard/cards";
 import { DataTable } from "@/ui/computer-management/dashboard/data-table";
 import LatestCheckInOut from "@/ui/computer-management/dashboard/latest-check-in-out";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default function Page() {
   return (

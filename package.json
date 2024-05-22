@@ -31,7 +31,7 @@
     "date-fns": "^3.6.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.373.0",
-    "next": "14.2.1",
+    "next": "^14.2.3",
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.13",
     "nookies": "^2.5.2",

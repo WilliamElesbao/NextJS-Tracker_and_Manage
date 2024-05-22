@@ -30,7 +30,7 @@ import {
   computerTypes,
   defaultStatus,
   locations,
-} from "@/lib/types/RecordsTypes";
+} from "@/lib/types/Records";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, Pencil1Icon } from "@radix-ui/react-icons";
@@ -67,9 +67,13 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
       patrimonyID: Number(data?.patrimonyID),
       serviceTag: data?.serviceTag! ?? "",
       serialNumber: data?.serialNumber! ?? "",
-      computerType: data?.computerType,
-      location: data?.location,
-      computerStatus: data?.computerStatus,
+      computerType: (data?.computerType as "NTB" | "DSK" | "WKS") ?? null,
+      location: (data?.location as "Matriz" | "SP" | "BH") ?? null,
+      computerStatus:
+        (data?.computerStatus as
+          | "available"
+          | "underMaintenance"
+          | "obsolete") ?? null,
       WhoReceived_user_FK: data?.user.id!,
       othersEquipment: data?.othersEquipment!,
       remarks: data?.remarks!,
@@ -211,7 +215,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              selected={field.value}
+                              // selected={field.value}
                               onSelect={field.onChange}
                             />
                           </PopoverContent>
@@ -469,7 +473,7 @@ export function CheckOutForm({ onCloseModal, data }: CheckOutFormProps) {
                         <FormControl>
                           <Select
                             onValueChange={field.onChange}
-                            defaultValue={field.value.toString()}
+                            defaultValue={field.value!.toString()}
                             disabled={!chkBoxIsActive}
                           >
                             <SelectTrigger className="w-full">

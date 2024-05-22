@@ -5,7 +5,8 @@ import {
   ComputerStatus,
   ComputerType,
   Location,
-} from "@/lib/types/RecordsTypes";
+  Records,
+} from "@/lib/types/Records";
 import { format } from "date-fns";
 import { unstable_noStore as noStore } from "next/cache";
 
@@ -37,9 +38,9 @@ export async function fetchAllRecords() {
   return formattedData;
 }
 
-export async function fetchRecordById(id: string) {
+export async function fetchRecordById(id: string): Promise<Records | null> {
   try {
-    const recordById = await prisma.equipmentManagement_TB.findUnique({
+    const record = await prisma.equipmentManagement_TB.findUnique({
       where: { id: id },
       include: {
         technician: {
@@ -52,10 +53,10 @@ export async function fetchRecordById(id: string) {
         user: true,
       },
     });
-
-    return recordById;
+    return record;
   } catch (error) {
     console.error("Erro ao buscar registro por id: ", error);
+    return null;
   }
 }
 
@@ -75,6 +76,7 @@ export async function fetchTechById(id: string) {
   try {
     const techById = await prisma.technician_TB.findUnique({
       where: { id: id },
+      select: { id: true, username: true, email: true },
     });
 
     return techById;

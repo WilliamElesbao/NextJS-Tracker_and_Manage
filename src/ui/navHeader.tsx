@@ -52,7 +52,6 @@ export function NavHeader() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      {/* TODO: Logout usando server action */}
                       <Button
                         className="flex justify-between min-w-full"
                         onClick={logout}

@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { deleteRecord } from "@/lib/actions";
-import { Records } from "@/lib/types/RecordsTypes";
-import { faPencil, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { Records } from "@/lib/types/Records";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-toastify";
 

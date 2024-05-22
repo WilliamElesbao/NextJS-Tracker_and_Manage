@@ -29,11 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext/authContext";
 import { createRecord } from "@/lib/actions";
 import { formSchema } from "@/lib/addFormSchema";
-import {
-  computerTypes,
-  defaultStatus,
-  locations,
-} from "@/lib/types/RecordsTypes";
+import { computerTypes, defaultStatus, locations } from "@/lib/types/Records";
 import { AddFormTypes } from "@/lib/types/add-form-types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,8 +62,9 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
   });
 
   async function handleOnSubmit(formData: z.infer<typeof formSchema>) {
-    const data: AddFormTypes = {
+    const data = {
       ...formData,
+      broughtBy_user_FK: Number(formData.broughtBy_user_FK),
       serviceTag:
         formData.serviceTag === "" || formData.serviceTag === undefined
           ? null

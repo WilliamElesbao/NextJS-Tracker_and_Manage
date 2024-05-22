@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Records } from "@/lib/types/RecordsTypes";
+import { Records } from "@/lib/types/Records";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";

@@ -9,12 +9,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Records, defaultStatus } from "@/lib/types/RecordsTypes";
+import { Records, Technician, User, defaultStatus } from "@/lib/types/Records";
 import { DatePicker } from "./date-picker";
+
+type ModifiedRecords = Omit<
+  Records,
+  "givenBackBy_tech_FK" | "WhoReceived_user_FK"
+> & {
+  givenBackBy_tech_FK: Technician;
+  WhoReceived_user_FK: User;
+};
 
 type CheckOutFormProps = {
   onCloseModal: () => void;
-  data?: Records;
+  data?: ModifiedRecords;
 };
 
 export function DetailsForm({ onCloseModal, data }: CheckOutFormProps) {
@@ -143,7 +151,6 @@ export function DetailsForm({ onCloseModal, data }: CheckOutFormProps) {
                 </Select>
               </div>
 
-              {/* TODO: adicionar esse campo */}
               <div>
                 <Label className="content-center">Entregue pelo técnico</Label>
                 <Input
