@@ -30,7 +30,6 @@ import { AuthContext } from "@/contexts/AuthContext/authContext";
 import { createRecord } from "@/lib/actions";
 import { formSchema } from "@/lib/addFormSchema";
 import { computerTypes, defaultStatus, locations } from "@/lib/types/Records";
-import { AddFormTypes } from "@/lib/types/add-form-types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -150,7 +149,12 @@ export default function CreateForm({ onCloseModal }: FormAddProps) {
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
-                        disabled={(date) => date > new Date()}
+                        modifiers={{
+                          disabled: [
+                            { after: new Date() },
+                            { dayOfWeek: [0, 6] },
+                          ],
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

@@ -15,22 +15,23 @@ export async function createRecord(formData: AddFormTypes) {
     sendCheckInMail(formData);
     return true;
   } catch (error) {
+    console.log("error:::", error.meta?.target[0]);
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
       let errorMessage = "";
-      switch (error.meta?.target) {
-        case "EquipmentManagement_TB_hostname_key":
+      switch (error.meta?.target[0]) {
+        case "hostname":
           errorMessage = "O hostname informado já foi registrado.";
           break;
-        case "EquipmentManagement_TB_patrimonyID_key":
+        case "patrimonyID":
           errorMessage = "O número de patrimônio informado já foi registrado.";
           break;
-        case "EquipmentManagement_TB_serviceTag_key":
+        case "serviceTag":
           errorMessage = "A Service Tag informada já foi registrada.";
           break;
-        case "EquipmentManagement_TB_serialNumber_key":
+        case "serialNumber":
           errorMessage = "O Serial Number informado já foi registrado.";
           break;
         default:
